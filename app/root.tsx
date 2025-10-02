@@ -35,6 +35,18 @@ import styles from "./styles/app.css?url";
 import { DEFAULT_LOCALE } from "./utils/const";
 import { loadCriticalData, loadDeferredData } from "./utils/root.server";
 import { GlobalStyle } from "./weaverse/style";
+import { useEffect } from "react";
+
+export default function App() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://config.gorgias.chat/bundle-loader/01J1WS5NTEF1HASX03YV9R22NA"; // 
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
 export type RootLoader = typeof loader;
 
