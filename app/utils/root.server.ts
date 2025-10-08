@@ -67,8 +67,8 @@ async function getLayoutData({ storefront, env }: AppLoadContext) {
   const data = await storefront
     .query<LayoutQuery>(LAYOUT_QUERY, {
       variables: {
-        headerMenuHandle: "Yellowstone-1883-Reserve",
-        footerMenuHandle: "footer",
+        headerMenuHandle: "yellowstone-1883-reserve-weaverse",
+        footerMenuHandle: "yellowstone-1883-reserve-weaverse",
         language: storefront.i18n.language,
       },
     })
