@@ -16,3 +16,5 @@ node_modules
 pnpm-lock.yaml
 .DS_Store
 .react-router
+.specify
+.claude
