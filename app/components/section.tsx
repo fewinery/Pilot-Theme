@@ -6,8 +6,6 @@ import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type React from "react";
 import type { HTMLAttributes } from "react";
-import { forwardRef } from "react";
-import { useAnimation } from "~/hooks/use-animation";
 import { cn } from "~/utils/cn";
 import type { BackgroundImageProps } from "./background-image";
 import { backgroundInputs } from "./background-image";
@@ -26,6 +24,7 @@ export interface SectionProps<T = any>
     Omit<HTMLAttributes<HTMLElement>, "children">,
     Partial<BackgroundProps>,
     Partial<OverlayProps> {
+  ref?: React.Ref<HTMLElement>;
   as?: React.ElementType;
   borderRadius?: number;
   containerClassName?: string;
@@ -78,8 +77,9 @@ const variants = cva("relative", {
   },
 });
 
-export const Section = forwardRef<HTMLElement, SectionProps>((props, ref) => {
+export function Section(props: SectionProps) {
   let {
+    ref,
     as: Component = "section",
     width,
     gap,
@@ -101,7 +101,6 @@ export const Section = forwardRef<HTMLElement, SectionProps>((props, ref) => {
     style = {},
     ...rest
   } = props;
-  const [scope] = useAnimation(ref);
 
   style = {
     ...style,
@@ -114,7 +113,7 @@ export const Section = forwardRef<HTMLElement, SectionProps>((props, ref) => {
 
   return (
     <Component
-      ref={scope}
+      ref={ref}
       {...rest}
       style={style}
       className={cn(
@@ -141,7 +140,7 @@ export const Section = forwardRef<HTMLElement, SectionProps>((props, ref) => {
       </div>
     </Component>
   );
-});
+}
 
 export const layoutInputs: InspectorGroup["inputs"] = [
   {

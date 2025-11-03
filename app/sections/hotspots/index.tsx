@@ -1,6 +1,5 @@
 import type { WeaverseImage } from "@weaverse/hydrogen";
 import { createSchema, IMAGES_PLACEHOLDERS } from "@weaverse/hydrogen";
-import { forwardRef } from "react";
 import Heading, {
   type HeadingProps,
   headingInputs,
@@ -9,19 +8,20 @@ import { Image } from "~/components/image";
 import Paragraph from "~/components/paragraph";
 import type { SectionProps } from "~/components/section";
 import { Section } from "~/components/section";
-import type { ImageAspectRatio } from "~/types/image";
+import type { ImageAspectRatio } from "~/types/others";
 import { calculateAspectRatio } from "~/utils/image";
 
 interface HotspotsProps
   extends Omit<SectionProps, "content">,
-    Omit<HeadingProps, "as"> {
+    Omit<HeadingProps, "as" | "ref"> {
   description?: string;
   headingTagName?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
   image: string;
   aspectRatio: ImageAspectRatio;
+  ref?: React.Ref<HTMLElement>;
 }
 
-const Hotspots = forwardRef<HTMLElement, HotspotsProps>((props, ref) => {
+function Hotspots(props: HotspotsProps) {
   const {
     headingTagName,
     content,
@@ -38,6 +38,7 @@ const Hotspots = forwardRef<HTMLElement, HotspotsProps>((props, ref) => {
     image,
     aspectRatio,
     children,
+    ref,
     ...rest
   } = props;
   const imageData: Partial<WeaverseImage> =
@@ -79,7 +80,7 @@ const Hotspots = forwardRef<HTMLElement, HotspotsProps>((props, ref) => {
       </div>
     </Section>
   );
-});
+}
 
 export default Hotspots;
 

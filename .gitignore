@@ -18,3 +18,8 @@ pnpm-lock.yaml
 .react-router
 .specify
 .claude
+.github/copilot-instructions.md
+memory/
+scripts/
+templates/
+specs/

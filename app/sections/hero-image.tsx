@@ -5,13 +5,14 @@ import {
 } from "@weaverse/hydrogen";
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
-import { forwardRef } from "react";
 import { backgroundInputs } from "~/components/background-image";
 import { overlayInputs } from "~/components/overlay";
 import type { SectionProps } from "~/components/section";
 import { layoutInputs, Section } from "~/components/section";
 
-export interface HeroImageProps extends VariantProps<typeof variants> {}
+export interface HeroImageProps extends VariantProps<typeof variants> {
+  ref: React.Ref<HTMLElement>;
+}
 
 const variants = cva("flex flex-col [&_.paragraph]:mx-[unset]", {
   variants: {
@@ -55,27 +56,23 @@ const variants = cva("flex flex-col [&_.paragraph]:mx-[unset]", {
   },
 });
 
-const HeroImage = forwardRef<HTMLElement, HeroImageProps & SectionProps>(
-  (props, ref) => {
-    const { children, height, contentPosition, ...rest } = props;
-    const { enableTransparentHeader } = useThemeSettings();
-    return (
-      <Section
-        ref={ref}
-        {...rest}
-        containerClassName={variants({
-          contentPosition,
-          height,
-          enableTransparentHeader,
-        })}
-      >
-        {children}
-      </Section>
-    );
-  },
-);
-
-export default HeroImage;
+export default function HeroImage(props: HeroImageProps & SectionProps) {
+  const { ref, children, height, contentPosition, ...rest } = props;
+  const { enableTransparentHeader } = useThemeSettings();
+  return (
+    <Section
+      ref={ref}
+      {...rest}
+      containerClassName={variants({
+        contentPosition,
+        height,
+        enableTransparentHeader,
+      })}
+    >
+      {children}
+    </Section>
+  );
+}
 
 export const schema = createSchema({
   type: "hero-image",

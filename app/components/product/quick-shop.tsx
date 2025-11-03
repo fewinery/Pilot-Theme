@@ -20,7 +20,7 @@ import { AddToCartButton } from "~/components/product/add-to-cart-button";
 import { ProductMedia } from "~/components/product/product-media";
 import { Quantity } from "~/components/product/quantity";
 import { Skeleton } from "~/components/skeleton";
-import type { ProductData } from "~/routes/($locale).api.product";
+import JudgemeStarsRating from "~/sections/main-product/judgeme-stars-rating";
 import { ProductBadges } from "./badges";
 import { VariantPrices } from "./variant-prices";
 import { VariantSelector } from "./variant-selector";
@@ -66,6 +66,11 @@ export function QuickShop({
               <h5>{product.title}</h5>
             </div>
             <VariantPrices variant={selectedVariant} />
+            <JudgemeStarsRating
+              productHandle={product.handle}
+              ratingText="{{rating}} ({{total_reviews}} reviews)"
+              errorText=""
+            />
             {product.summary && (
               <p className="leading-relaxed">{product.summary}</p>
             )}
@@ -132,12 +137,12 @@ export function QuickShopTrigger({
   panelType?: "modal" | "drawer";
 }) {
   const [open, setOpen] = useState(false);
-  const { load, data } = useFetcher<ProductData>();
+  const { load, data } = useFetcher<{ product: ProductQuery["product"] }>();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: open and state are intentionally excluded
   useEffect(() => {
     if (open && !data) {
-      load(`/api/product?handle=${productHandle}`);
+      load(`/api/product/${productHandle}`);
     }
   }, [open]);
 
@@ -169,12 +174,15 @@ export function QuickShopTrigger({
         </Button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-10 bg-gray-900/50 [--fade-in-duration:150ms] data-[state=open]:animate-fade-in" />
+        <Dialog.Overlay className="fixed inset-0 z-10 bg-gray-900/50 data-[state=open]:animate-fade-in" />
         <Dialog.Content
+          onCloseAutoFocus={(e) => e.preventDefault()}
           className={clsx(
             "quick-shop-dialog-content",
             "fixed inset-0 z-10 flex items-center overflow-x-hidden px-4",
-            "backdrop-blur-xs data-[state=open]:animate-slide-up",
+            "backdrop-blur-xs",
+            "[--slide-up-from:20px]",
+            "data-[state=open]:animate-slide-up",
           )}
           onClick={(e) => {
             const target = e.target as HTMLElement;
@@ -182,12 +190,6 @@ export function QuickShopTrigger({
               setOpen(false);
             }
           }}
-          style={
-            {
-              "--slide-up-from": "20px",
-              "--slide-up-duration": "300ms",
-            } as React.CSSProperties
-          }
           aria-describedby={undefined}
         >
           <Dialog.Close asChild>

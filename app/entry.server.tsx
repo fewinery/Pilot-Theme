@@ -1,7 +1,10 @@
-import { createContentSecurityPolicy } from "@shopify/hydrogen";
+import {
+  createContentSecurityPolicy,
+  type HydrogenRouterContextProvider,
+} from "@shopify/hydrogen";
 import { isbot } from "isbot";
 import { renderToReadableStream } from "react-dom/server";
-import type { AppLoadContext, EntryContext } from "react-router";
+import type { EntryContext } from "react-router";
 import { ServerRouter } from "react-router";
 
 import { getWeaverseCsp } from "~/weaverse/csp";
@@ -11,7 +14,7 @@ export default async function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   reactRouterContext: EntryContext,
-  context: AppLoadContext,
+  context: HydrogenRouterContextProvider,
 ) {
   const { nonce, header, NonceProvider } = createContentSecurityPolicy({
     ...getWeaverseCsp(request, context),
@@ -21,6 +24,7 @@ export default async function handleRequest(
       storeDomain: context.env?.PUBLIC_STORE_DOMAIN,
     },
   });
+
   const body = await renderToReadableStream(
     <NonceProvider>
       <ServerRouter
@@ -32,7 +36,8 @@ export default async function handleRequest(
     {
       nonce,
       signal: request.signal,
-      onError(_error) {
+      onError(error) {
+        console.error(error);
         responseStatusCode = 500;
       },
     },
@@ -45,6 +50,7 @@ export default async function handleRequest(
   responseHeaders.set("Content-Type", "text/html");
   // TODO: change to Content-Security-Policy when you ready with your CSP configs.
   responseHeaders.set("Content-Security-Policy-Report-Only", header);
+
   return new Response(body, {
     headers: responseHeaders,
     status: responseStatusCode,

@@ -1,6 +1,6 @@
 import { createSchema, type HydrogenComponentProps } from "@weaverse/hydrogen";
 import type { CSSProperties } from "react";
-import { forwardRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const ONE_SEC = 1000;
 const ONE_MIN = ONE_SEC * 60;
@@ -21,16 +21,14 @@ function calculateRemainingTime(endTime: number) {
   };
 }
 
-type CountDownTimerData = {
+interface CountDownTimerData {
   textColor: string;
   endTime: number;
-};
+  ref?: React.Ref<HTMLDivElement>;
+}
 
-const CountdownTimer = forwardRef<
-  HTMLDivElement,
-  CountDownTimerData & HydrogenComponentProps
->((props, ref) => {
-  const { textColor, endTime, ...rest } = props;
+function CountdownTimer(props: CountDownTimerData & HydrogenComponentProps) {
+  const { textColor, endTime, ref, ...rest } = props;
   const [remainingTime, setRemainingTime] = useState(
     calculateRemainingTime(endTime),
   );
@@ -52,17 +50,17 @@ const CountdownTimer = forwardRef<
     return () => clearInterval(intervalId);
   }, [endTime]);
 
-  const timerStyle: CSSProperties = {
-    "--timer-color": textColor,
-  } as CSSProperties;
-
   return (
     <div
       ref={ref}
       {...rest}
       className="countdown--timer flex py-3 text-(--timer-color) sm:py-0"
       data-motion="fade-up"
-      style={timerStyle}
+      style={
+        {
+          "--timer-color": textColor,
+        } as CSSProperties
+      }
     >
       <div className="space-y-1">
         <div className="flex items-center font-medium text-4xl leading-tight md:text-5xl">
@@ -97,7 +95,7 @@ const CountdownTimer = forwardRef<
       </div>
     </div>
   );
-});
+}
 
 export default CountdownTimer;
 

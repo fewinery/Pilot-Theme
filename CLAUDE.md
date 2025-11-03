@@ -4,9 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
+<<<<<<< HEAD
 This is **Pilot** (v5.6.0), a Shopify Hydrogen theme powered by Weaverse - a visual page builder for Hydrogen storefronts. The project is built with React 19.1.1, TypeScript 5.9.2, React Router 7.8.2, and Tailwind CSS v4.1.13. It runs on Node.js 20+ and uses Biome 2.2.2 for linting/formatting.
 
 **Important**: This project uses React Router v7, NOT Remix. Always import from `'react-router'` not `'react-router-dom'`.
+=======
+This is **Pilot**, a Shopify Hydrogen theme powered by Weaverse - a visual page builder for Hydrogen storefronts. The project is built with React, TypeScript, React Router 7, and Tailwind CSS v4. It runs on Node.js 20+ and uses Biome for linting/formatting. Current version: 5.6.0 with upcoming 5.7.0 release.
+>>>>>>> 1e04f30989c08c3777bb676cdf43a4c91854a32d
 
 ## Essential Commands
 
@@ -91,6 +95,7 @@ All routes follow the pattern `($locale).{route}.tsx` to support internationaliz
 
 - **Weaverse**: Visual page builder - sections must be registered in `/app/weaverse/components.ts`
 - **Judge.me**: Product reviews integration via utilities in `/app/utils/judgeme.ts`
+- **Combined Listings**: Intelligent product grouping system via utilities in `/app/utils/combined-listings.ts`
 - **Analytics**: Shopify Analytics integrated throughout components
 - **Customer Accounts**: New Shopify Customer Account API support (OAuth-based)
 - **Radix UI**: For accessible UI primitives (accordion, dialog, dropdown, etc.)
@@ -99,6 +104,7 @@ All routes follow the pattern `($locale).{route}.tsx` to support internationaliz
 ### Weaverse Section Development
 
 1. **Creating a New Section**:
+<<<<<<< HEAD
    ```typescript
    // app/sections/my-section/index.tsx
    import { createSchema, type HydrogenComponentProps, type ComponentLoaderArgs } from '@weaverse/hydrogen';
@@ -144,6 +150,35 @@ All routes follow the pattern `($locale).{route}.tsx` to support internationaliz
      return result.data;
    };
    ```
+=======
+  ```typescript
+  // app/sections/my-section/index.tsx
+  import { createSchema, type HydrogenComponentProps } from '@weaverse/hydrogen';
+  import type { ComponentRef } from 'react';
+
+  interface MyProps extends HydrogenComponentProps {
+    heading: string;
+    ref?: React.Ref<HTMLDivElement>;
+  }
+
+  const MySection = ({ ref, ...props }: MyProps) => {
+    // Component implementation
+  };
+
+  export default MySection;
+
+  export const schema = createSchema({
+    type: 'my-section',
+    title: 'My Section',
+    settings: [/* ... */]
+  });
+
+  // Optional loader for server-side data fetching
+  export const loader = async ({ weaverse, data }) => {
+    // Fetch data
+  };
+  ```
+>>>>>>> 1e04f30989c08c3777bb676cdf43a4c91854a32d
 
 2. **Register in `/app/weaverse/components.ts`**:
    ```typescript
@@ -167,21 +202,21 @@ All routes follow the pattern `($locale).{route}.tsx` to support internationaliz
 export async function loader({ params, request, context }: LoaderFunctionArgs) {
   const { handle } = params;
   invariant(handle, "Missing handle param");
-  
+
   const { storefront, weaverse } = context;
-  
+
   // Parallel data loading
   const [shopifyData, weaverseData, thirdPartyData] = await Promise.all([
     storefront.query(QUERY, { variables }),
     weaverse.loadPage({ type: "PAGE_TYPE", handle }),
     fetchThirdPartyData(),
   ]);
-  
+
   // Handle errors
   if (!shopifyData.resource) {
     throw new Response("Not found", { status: 404 });
   }
-  
+
   return data({
     shopifyData,
     weaverseData,
@@ -190,6 +225,7 @@ export async function loader({ params, request, context }: LoaderFunctionArgs) {
 }
 ```
 
+<<<<<<< HEAD
 ### Theme Settings & Schema
 
 Weaverse provides global theme settings defined in `app/weaverse/schema.server.ts`. This includes:
@@ -261,6 +297,32 @@ This makes `weaverse` available in:
 - Route loaders: `context.weaverse.loadPage()`
 - Theme settings: `context.weaverse.loadThemeSettings()`
 - Component loaders: `weaverse.storefront.query()`
+=======
+### Combined Listings Integration
+
+Combined Listings allow intelligent product grouping and filtering:
+
+```typescript
+// Use utility functions from app/utils/combined-listings.ts
+import { isCombinedListing, shouldFilterCombinedListings } from '~/utils/combined-listings';
+
+// In product queries and loaders
+const filteredProducts = products.filter(product => 
+  !shouldFilterCombinedListings(product, settings)
+);
+
+// In components
+if (isCombinedListing(product)) {
+  // Handle combined listing display differently
+}
+```
+
+Key integration points:
+- Product loaders filter combined listings based on settings
+- Cart functionality handles combined products specially
+- Product display components check for combined listing status
+- Featured products support both collection-based and manual selection
+>>>>>>> 1e04f30989c08c3777bb676cdf43a4c91854a32d
 
 ### Environment Configuration
 
@@ -274,9 +336,14 @@ The project uses `@shopify/hydrogen` and `@shopify/remix-oxygen` for environment
 ### Testing Strategy
 
 - E2E tests use Playwright and are located in `/tests/`
+<<<<<<< HEAD
 - **Important**: Dev server runs on port 3456, but Playwright tests expect port 3000
   - Tests run against `npm run preview` (production preview on port 3000)
   - Do NOT use `npm run dev` for E2E tests
+=======
+- Tests run against `localhost:3000` using production build (`npm run preview`)
+- Playwright automatically starts the preview server before running tests
+>>>>>>> 1e04f30989c08c3777bb676cdf43a4c91854a32d
 - Focus on critical user flows: cart operations, checkout process
 - Run individual tests: `npx playwright test tests/cart.test.ts`
 
@@ -314,6 +381,7 @@ When running `npm run dev`, access these helpful tools:
 4. **Customer Account Queries**: Only use in `*.account*.{ts,tsx}` files
 5. **Parallel Loading**: Always use `Promise.all()` for multiple data fetches in loaders
 6. **Type Safety**: Never use `any` type, properly type all Weaverse section props
+<<<<<<< HEAD
 7. **React Router Imports**: Import from `'react-router'` not `'react-router-dom'`
 8. **forwardRef Required**: All Weaverse sections MUST use `forwardRef<HTMLElement, Props>`
 9. **Test Port Mismatch**: Dev server uses port 3456, but E2E tests expect port 3000 (use `npm run preview`)
@@ -325,3 +393,21 @@ When running `npm run dev`, access these helpful tools:
 
 ## Recent Changes
 - 001-winehub-integration: Added TypeScript 5.9.2, React 19.1.1 + @weaverse/hydrogen 5.4.2, @shopify/hydrogen 2025.5.0, React Router 7.8.2, Tailwind CSS v4.1.13
+=======
+7. **Combined Listings**: Use utility functions from `/app/utils/combined-listings.ts` for product filtering and grouping logic
+8. **Package Manager**: Use npm (not pnpm) - the project is configured for npm package management
+
+## Development Setup Requirements
+
+### Node.js and Dependencies
+- **Node.js**: Version 20.0.0 or higher required
+- **Package Manager**: npm (configured in package.json, don't use pnpm)
+- **Environment**: Copy `.env.example` to `.env` and configure Shopify store credentials
+
+### Key Configuration Files
+- **react-router.config.ts**: React Router v7 configuration (SSR enabled, app directory structure)
+- **vite.config.ts**: Includes Hydrogen, Oxygen, Tailwind CSS v4, and development server warmup
+- **biome.json**: Code quality configuration extending from `ultracite` and `@weaverse/biome`
+- **codegen.ts**: GraphQL code generation for Shopify Storefront and Customer Account APIs
+- **tsconfig.json**: TypeScript config with `~/` path alias, strict mode disabled for compatibility
+>>>>>>> 1e04f30989c08c3777bb676cdf43a4c91854a32d

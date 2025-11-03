@@ -1,21 +1,21 @@
+import type { Storefront } from "@shopify/hydrogen";
 import {
   type ComponentLoaderArgs,
   createSchema,
   type WeaverseCollection,
   type WeaverseProduct,
 } from "@weaverse/hydrogen";
-import { forwardRef } from "react";
 import type {
   CollectionProductsQuery,
-  FeaturedProductsQuery,
   ProductsByIdsQuery,
 } from "storefront-api.generated";
 import type { SectionProps } from "~/components/section";
 import { layoutInputs, Section } from "~/components/section";
 import { PRODUCT_CARD_FRAGMENT } from "~/graphql/fragments";
-import { maybeFilterOutCombinedListingsQuery } from "~/utils/combined-listings";
+import type { I18nLocale } from "~/types/others";
+import { getFeaturedProducts } from "~/utils/featured-products";
 
-interface FeaturedProductsData {
+interface FeaturedProductsSectionData {
   selectionMethod: "auto" | "collection" | "manual";
   collection?: WeaverseCollection;
   products?: WeaverseProduct[];
@@ -23,32 +23,26 @@ interface FeaturedProductsData {
 
 interface FeaturedProductsProps
   extends SectionProps<FeaturedProductsLoaderData>,
-    FeaturedProductsData {}
+    FeaturedProductsSectionData {
+  ref: React.Ref<HTMLElement>;
+}
 
-const FeaturedProducts = forwardRef<HTMLElement, FeaturedProductsProps>(
-  (props, ref) => {
-    const { loaderData, children, ...rest } = props;
-    return (
-      <Section ref={ref} {...rest}>
-        {children}
-      </Section>
-    );
-  },
-);
-
-export default FeaturedProducts;
-
-const FEATURED_PRODUCTS_QUERY = `#graphql
-  query featuredProducts($country: CountryCode, $language: LanguageCode, $query: String)
-  @inContext(country: $country, language: $language) {
-    products(first: 16, query: $query) {
-      nodes {
-        ...ProductCard
-      }
-    }
-  }
-  ${PRODUCT_CARD_FRAGMENT}
-`;
+export default function FeaturedProducts(props: FeaturedProductsProps) {
+  const {
+    ref,
+    loaderData,
+    selectionMethod,
+    collection,
+    products,
+    children,
+    ...rest
+  } = props;
+  return (
+    <Section ref={ref} {...rest}>
+      {children}
+    </Section>
+  );
+}
 
 const COLLECTION_PRODUCTS_QUERY = `#graphql
   query collectionProducts($country: CountryCode, $language: LanguageCode, $handle: String!)
@@ -81,7 +75,7 @@ export type FeaturedProductsLoaderData = Awaited<ReturnType<typeof loader>>;
 export const loader = async ({
   data,
   weaverse,
-}: ComponentLoaderArgs<FeaturedProductsData>) => {
+}: ComponentLoaderArgs<FeaturedProductsSectionData>) => {
   const { language, country } = weaverse.storefront.i18n;
   const { selectionMethod = "auto", collection, products } = data;
 
@@ -125,16 +119,10 @@ export const loader = async ({
   }
 
   // Default: auto selection (best selling products)
-  return await weaverse.storefront.query<FeaturedProductsQuery>(
-    FEATURED_PRODUCTS_QUERY,
-    {
-      variables: {
-        country,
-        language,
-        query: maybeFilterOutCombinedListingsQuery,
-      },
-    },
+  const { featuredProducts } = await getFeaturedProducts(
+    weaverse.storefront as Storefront<I18nLocale>,
   );
+  return { products: featuredProducts };
 };
 
 export const schema = createSchema({
@@ -162,14 +150,14 @@ export const schema = createSchema({
           type: "collection",
           name: "collection",
           label: "Select collection",
-          condition: (data: FeaturedProductsData) =>
+          condition: (data: FeaturedProductsSectionData) =>
             data.selectionMethod === "collection",
         },
         {
           type: "product-list",
           name: "products",
           label: "Select products",
-          condition: (data: FeaturedProductsData) =>
+          condition: (data: FeaturedProductsSectionData) =>
             data.selectionMethod === "manual",
         },
       ],

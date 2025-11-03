@@ -15,7 +15,7 @@ import type {
 import { FreeMode, Navigation, Pagination, Thumbs } from "swiper/modules";
 import { Swiper, type SwiperClass, SwiperSlide } from "swiper/react";
 import { Image } from "~/components/image";
-import type { ImageAspectRatio } from "~/types/image";
+import type { ImageAspectRatio } from "~/types/others";
 import { cn } from "~/utils/cn";
 import { calculateAspectRatio } from "~/utils/image";
 import { ZoomButton, ZoomModal } from "./media-zoom";
@@ -118,7 +118,11 @@ export function ProductMedia(props: ProductMediaProps) {
                     media={med}
                     imageAspectRatio={imageAspectRatio}
                     index={idx}
-                    className="w-[80vw] max-w-none object-cover lg:h-full lg:w-full"
+                    className={cn(
+                      "w-[80vw] max-w-none object-cover lg:h-full lg:w-full",
+                      idx === 0 &&
+                        "[&_img]:[view-transition-name:image-expand]",
+                    )}
                   />
                 </div>
                 {shouldShowButton && (
@@ -247,6 +251,10 @@ export function ProductMedia(props: ProductMediaProps) {
                       media={med}
                       imageAspectRatio={imageAspectRatio}
                       index={idx}
+                      className={
+                        idx === 0 &&
+                        "[&_img]:[view-transition-name:image-expand]"
+                      }
                     />
                   </div>
                   {shouldShowButton && (
@@ -266,7 +274,7 @@ export function ProductMedia(props: ProductMediaProps) {
               );
             })}
           </Swiper>
-          <div className="absolute right-6 bottom-6 z-10 hidden items-center gap-2 md:flex">
+          <div className="absolute right-6 bottom-6 z-1 hidden items-center gap-2 md:flex">
             <button
               type="button"
               className="media_slider__prev left-6 border border-transparent bg-white p-2 text-center text-gray-900 transition-all duration-200 hover:bg-gray-800 hover:text-white disabled:cursor-not-allowed disabled:text-body-subtle"
@@ -327,7 +335,6 @@ function Media({
         aria-label={mediaVideo.alt || "Product video"}
         className={cn("h-auto w-full object-cover", className)}
         style={{ aspectRatio: imageAspectRatio }}
-        // biome-ignore lint/suspicious/noConsole: <explanation> --- IGNORE ---
         onError={console.error}
       >
         <track

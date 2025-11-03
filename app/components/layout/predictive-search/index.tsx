@@ -5,17 +5,19 @@ import {
 } from "@phosphor-icons/react";
 import * as Dialog from "@radix-ui/react-dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
-import { type MutableRefObject, useEffect, useState } from "react";
-import { useLocation } from "react-router";
+import { type RefObject, useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router";
 import Link from "~/components/link";
 import { usePredictiveSearch } from "~/hooks/use-predictive-search";
 import { cn } from "~/utils/cn";
+import { PopularKeywords } from "./popular-keywords";
 import { PredictiveSearchResult } from "./predictive-search-result";
 import { PredictiveSearchForm } from "./search-form";
 
 export function PredictiveSearchButton() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
+  const params = useParams();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: close the dialog when the location changes, aka when the user navigates to a search result page
   useEffect(() => {
@@ -33,20 +35,15 @@ export function PredictiveSearchButton() {
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay
-          className="fixed inset-0 z-10 bg-black/50 data-[state=open]:animate-fade-in"
-          style={{ "--fade-in-duration": "100ms" } as React.CSSProperties}
-        />
+        <Dialog.Overlay className="data-[state=open]:animate-fade-in fixed inset-0 z-10 bg-black/50" />
         <Dialog.Content
+          onCloseAutoFocus={(e) => e.preventDefault()}
           className={cn([
-            "fixed inset-x-0 top-0 z-10 bg-(--color-header-bg)",
             "-translate-y-full data-[state=open]:translate-y-0",
+            "fixed inset-x-0 top-0 z-10 bg-(--color-header-bg)",
             "data-[state=open]:animate-enter-from-top",
             "focus-visible:outline-hidden",
           ])}
-          style={
-            { "--enter-from-top-duration": "200ms" } as React.CSSProperties
-          }
           aria-describedby={undefined}
         >
           <VisuallyHidden.Root asChild>
@@ -55,30 +52,52 @@ export function PredictiveSearchButton() {
           <div className="relative pt-(--topbar-height)">
             <PredictiveSearchForm>
               {({ fetchResults, inputRef }) => (
-                <div className="mx-auto my-6 flex w-[560px] max-w-[90vw] items-center gap-3 border border-line-subtle px-3">
-                  <MagnifyingGlassIcon className="h-5 w-5 shrink-0 text-gray-500" />
-                  <input
-                    name="q"
-                    type="search"
-                    onChange={(e) => fetchResults(e.target.value)}
-                    onFocus={(e) => fetchResults(e.target.value)}
-                    placeholder="Enter a keyword"
-                    ref={inputRef}
-                    autoComplete="off"
-                    className="h-full w-full py-4 focus-visible:outline-hidden"
-                  />
-                  <button
-                    type="button"
-                    className="shrink-0 p-1 text-gray-500"
-                    onClick={() => {
+                <div className="mx-auto w-[560px] max-w-[90vw] py-6 space-y-2">
+                  <div className="flex items-center gap-3 border border-line-subtle px-3">
+                    <MagnifyingGlassIcon className="h-5 w-5 shrink-0 text-gray-500" />
+                    <input
+                      name="q"
+                      type="search"
+                      onChange={(e) => fetchResults(e.target.value)}
+                      onFocus={(e) => fetchResults(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          const query = e.currentTarget.value.trim();
+                          if (query) {
+                            const locale = params.locale
+                              ? `/${params.locale}`
+                              : "";
+                            window.location.href = `${locale}/search?q=${encodeURIComponent(query)}`;
+                          }
+                        }
+                      }}
+                      placeholder="Enter a keyword"
+                      ref={inputRef}
+                      autoComplete="off"
+                      className="h-full w-full py-4 focus-visible:outline-hidden"
+                    />
+                    <button
+                      type="button"
+                      className="shrink-0 p-1 text-gray-500"
+                      onClick={() => {
+                        if (inputRef.current) {
+                          inputRef.current.value = "";
+                          fetchResults("");
+                        }
+                      }}
+                    >
+                      <XIcon className="h-5 w-5" />
+                    </button>
+                  </div>
+                  <PopularKeywords
+                    onKeywordClick={(keyword) => {
                       if (inputRef.current) {
-                        inputRef.current.value = "";
-                        fetchResults("");
+                        inputRef.current.value = keyword;
+                        fetchResults(keyword);
                       }
                     }}
-                  >
-                    <XIcon className="h-5 w-5" />
-                  </button>
+                  />
                 </div>
               )}
             </PredictiveSearchForm>
@@ -137,7 +156,7 @@ function PredictiveSearchResults() {
   );
 }
 
-function NoResults({ searchTerm }: { searchTerm: MutableRefObject<string> }) {
+function NoResults({ searchTerm }: { searchTerm: RefObject<string> }) {
   if (!searchTerm.current) {
     return null;
   }

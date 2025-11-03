@@ -9,9 +9,9 @@ import {
 } from "react-router";
 import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/tooltip";
 import type { RootLoader } from "~/root";
+import type { AppliedFilter } from "~/types/others";
 import { cn } from "~/utils/cn";
-import type { AppliedFilter } from "~/utils/filter";
-import { getAppliedFilterLink, getFilterLink } from "~/utils/filter";
+import { getAppliedFilterLink, getFilterLink } from "./filter-utils";
 
 type FilterDisplayAs = "swatch" | "button" | "list-item";
 
@@ -35,7 +35,7 @@ export function FilterItem({
     (flt) => JSON.stringify(flt.filter) === option.input,
   );
 
-  const [checked, setChecked] = useState(!!filter);
+  const [checked, setChecked] = useState(Boolean(filter));
 
   function handleCheckedChange(newChecked: boolean) {
     setChecked(newChecked);

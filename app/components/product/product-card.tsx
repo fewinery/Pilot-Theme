@@ -3,15 +3,17 @@ import type { MoneyV2 } from "@shopify/hydrogen/storefront-api-types";
 import { useThemeSettings } from "@weaverse/hydrogen";
 import clsx from "clsx";
 import { useState } from "react";
+import { useViewTransitionState } from "react-router";
 import type {
   ProductCardFragment,
   ProductVariantFragment,
 } from "storefront-api.generated";
 import { Image } from "~/components/image";
 import { Link } from "~/components/link";
-import { NavLink } from "~/components/nav-link";
+import { RevealUnderline } from "~/components/reveal-underline";
 import { Spinner } from "~/components/spinner";
-import { RevealUnderline } from "~/reveal-underline";
+import { usePrefixPathWithLocale } from "~/hooks/use-prefix-path-with-locale";
+import JudgemeStarsRating from "~/sections/main-product/judgeme-stars-rating";
 import { isCombinedListing } from "~/utils/combined-listings";
 import { calculateAspectRatio } from "~/utils/image";
 import {
@@ -40,6 +42,7 @@ export function ProductCard({
     pcardTitlePricesAlignment,
     pcardAlignment,
     pcardShowVendor,
+    pcardShowReviews,
     pcardShowLowestPrice,
     pcardShowSalePrice,
     pcardEnableQuickShop,
@@ -57,6 +60,11 @@ export function ProductCard({
   const [selectedVariant, setSelectedVariant] =
     useState<ProductVariantFragment | null>(null);
   const [isImageLoading, setIsImageLoading] = useState(false);
+  const productPageHref = usePrefixPathWithLocale(
+    `/products/${product.handle}`,
+  );
+  const isTransitioning = useViewTransitionState(productPageHref);
+
   const { images, badges, priceRange } = product;
   const { minVariantPrice, maxVariantPrice } = priceRange;
 
@@ -109,6 +117,8 @@ export function ProductCard({
                 pcardShowImageOnHover &&
                   secondImage &&
                   "transition-opacity duration-300 group-hover:opacity-50",
+                isTransitioning &&
+                  "[&_img]:[view-transition-name:image-expand]",
               ])}
               sizes="(min-width: 64em) 25vw, (min-width: 48em) 30vw, 45vw"
               data={image}
@@ -172,6 +182,13 @@ export function ProductCard({
         {pcardShowVendor && (
           <div className="text-body-subtle uppercase">{product.vendor}</div>
         )}
+        {pcardShowReviews && (
+          <JudgemeStarsRating
+            productHandle={product.handle}
+            ratingText="{{rating}} ({{total_reviews}} reviews)"
+            errorText=""
+          />
+        )}
         <div
           className={clsx(
             "flex",
@@ -187,20 +204,15 @@ export function ProductCard({
               : "justify-between gap-4",
           )}
         >
-          <NavLink
+          <Link
             to={`/products/${product.handle}?${params.toString()}`}
             prefetch="intent"
-            className={({ isTransitioning }) =>
-              clsx(
-                "font-bold",
-                isTransitioning && "[view-transition-name:product-image]",
-              )
-            }
+            className="font-bold"
           >
             <RevealUnderline className="bg-position-[left_calc(1em+3px)] leading-normal">
               {product.title}
             </RevealUnderline>
-          </NavLink>
+          </Link>
           {pcardShowLowestPrice || isCombinedListing(product) ? (
             <div className="flex gap-1">
               <span>From</span>

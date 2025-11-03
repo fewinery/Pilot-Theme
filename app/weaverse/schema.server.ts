@@ -9,7 +9,7 @@ export const themeSchema: HydrogenThemeSchema = {
     name: "Pilot",
     authorProfilePhoto:
       "https://cdn.shopify.com/s/files/1/0838/0052/3057/files/Weaverse_logo_-_3000x_e2fa8c13-dac2-4dcb-a2c2-f7aaf7a58169.png?v=1698245759",
-    documentationUrl: "https://weaverse.io/docs",
+    documentationUrl: "https://docs.weaverse.io",
     supportUrl: "https://help.weaverse.io/",
   },
   i18n: {
@@ -192,22 +192,6 @@ export const themeSchema: HydrogenThemeSchema = {
             unit: "px",
           },
           defaultValue: 150,
-        },
-        {
-          type: "heading",
-          label: "Menu",
-        },
-        {
-          type: "select",
-          name: "openMenuBy",
-          label: "Open menu by",
-          configs: {
-            options: [
-              { value: "hover", label: "Mouse hover" },
-              { value: "click", label: "Mouse click" },
-            ],
-          },
-          defaultValue: "click",
         },
       ],
     },
@@ -396,9 +380,9 @@ export const themeSchema: HydrogenThemeSchema = {
         },
         {
           type: "color",
-          label: "Star rating",
-          name: "starRatingColor",
-          defaultValue: "#fde047",
+          label: "Product reviews",
+          name: "productReviewsColor",
+          defaultValue: "#108474",
         },
       ],
     },
@@ -488,7 +472,7 @@ export const themeSchema: HydrogenThemeSchema = {
             step: 1,
             unit: "px",
           },
-          defaultValue: 15,
+          defaultValue: 16,
         },
         {
           type: "range",
@@ -673,6 +657,12 @@ export const themeSchema: HydrogenThemeSchema = {
           type: "switch",
           label: "Show vendor",
           name: "pcardShowVendor",
+          defaultValue: true,
+        },
+        {
+          type: "switch",
+          label: "Show reviews (stars rating)",
+          name: "pcardShowReviews",
           defaultValue: true,
         },
         {
@@ -923,6 +913,20 @@ export const themeSchema: HydrogenThemeSchema = {
           },
           defaultValue: "center",
           condition: (theme) => theme.newsletterPopupEnabled === true,
+        },
+      ],
+    },
+    {
+      group: "Search",
+      inputs: [
+        {
+          type: "textarea",
+          name: "popularSearchKeywords",
+          label: "Popular search keywords",
+          defaultValue: "sunglasses, hats, jackets, shoes",
+          placeholder: "sunglasses, hats, jackets, shoes",
+          helpText:
+            "Enter popular search keywords separated by commas. E.g. <strong>sunglasses, hats, jackets, shoes</strong>",
         },
       ],
     },

@@ -5,7 +5,7 @@ import {
   useThemeSettings,
 } from "@weaverse/hydrogen";
 import { cva, type VariantProps } from "class-variance-authority";
-import { forwardRef, type HTMLAttributes } from "react";
+import type { HTMLAttributes } from "react";
 import {
   Link as RemixLink,
   type LinkProps as RemixLinkProps,
@@ -77,17 +77,35 @@ export interface LinkData
     Partial<LinkStyles>,
     VariantProps<typeof variants> {
   text?: string;
-  openInNewTab?: boolean;
 }
 
 export interface LinkProps
   extends HTMLAttributes<HTMLAnchorElement>,
     Partial<Omit<HydrogenComponentProps, "children">>,
-    LinkData {}
+    LinkData {
+  ref?: React.Ref<HTMLAnchorElement>;
+}
 
-export function useHrefWithLocale(href: LinkProps["to"]) {
+function checkExternal(to: LinkProps["to"]) {
+  if (typeof to === "string") {
+    // Check if it's a full URL with protocol
+    return /^https?:\/\//.test(to) || /^mailto:/.test(to) || /^tel:/.test(to);
+  }
+  if (typeof to === "object" && to.pathname) {
+    // For object syntax, only check if pathname looks like an external URL
+    return /^https?:\/\//.test(to.pathname);
+  }
+  return false;
+}
+
+function useHrefWithLocale(href: LinkProps["to"]) {
   const rootData = useRouteLoaderData<RootLoader>("root");
   const selectedLocale = rootData?.selectedLocale;
+
+  const isExternal = checkExternal(href);
+  if (isExternal) {
+    return href;
+  }
 
   let toWithLocale = href;
   if (
@@ -116,58 +134,59 @@ export function useHrefWithLocale(href: LinkProps["to"]) {
  *
  * Ultimately, it is up to you to decide how to implement this behavior.
  */
-export const Link = forwardRef(
-  (props: LinkProps, ref: React.Ref<HTMLAnchorElement>) => {
-    let {
-      to,
-      text,
-      variant,
-      openInNewTab,
-      className,
-      style,
-      textColor,
-      backgroundColor,
-      borderColor,
-      textColorHover,
-      backgroundColorHover,
-      borderColorHover,
-      children,
-      ...rest
-    } = props;
-    const { enableViewTransition } = useThemeSettings();
-    const href = useHrefWithLocale(to);
+export function Link(props: LinkProps) {
+  let {
+    ref,
+    to,
+    text,
+    variant,
+    className,
+    style,
+    textColor,
+    backgroundColor,
+    borderColor,
+    textColorHover,
+    backgroundColorHover,
+    borderColorHover,
+    children,
+    target,
+    ...rest
+  } = props;
+  const { enableViewTransition } = useThemeSettings();
+  const href = useHrefWithLocale(to);
 
-    if (variant === "custom") {
-      style = {
-        ...style,
-        "--btn-text": textColor,
-        "--btn-bg": backgroundColor,
-        "--btn-border": borderColor,
-        "--btn-bg-hover": backgroundColorHover,
-        "--btn-text-hover": textColorHover,
-        "--btn-border-hover": borderColorHover,
-      } as React.CSSProperties;
-    }
+  if (variant === "custom") {
+    style = {
+      ...style,
+      "--btn-text": textColor,
+      "--btn-bg": backgroundColor,
+      "--btn-border": borderColor,
+      "--btn-bg-hover": backgroundColorHover,
+      "--btn-text-hover": textColorHover,
+      "--btn-border-hover": borderColorHover,
+    } as React.CSSProperties;
+  }
 
-    if (!(text || children)) {
-      return null;
-    }
+  if (!(children || text)) {
+    return null;
+  }
 
-    return (
-      <RemixLink
-        ref={ref}
-        viewTransition={enableViewTransition}
-        to={href}
-        style={style}
-        target={openInNewTab ? "_blank" : undefined}
-        className={cn(variants({ variant, className }))}
-        {...rest}
-      >
-        {children || text}
-      </RemixLink>
-    );
-  },
-);
+  const isExternal = checkExternal(href);
+
+  return (
+    <RemixLink
+      ref={ref}
+      viewTransition={enableViewTransition}
+      to={href}
+      style={style}
+      className={cn(variants({ variant, className }))}
+      target={target !== undefined ? target : isExternal ? "_blank" : undefined}
+      {...rest}
+    >
+      {children || text}
+    </RemixLink>
+  );
+}
 
 export default Link;
 
@@ -185,13 +204,6 @@ export const linkContentInputs: InspectorGroup["inputs"] = [
     label: "Link to",
     defaultValue: "/products",
     placeholder: "/products",
-  },
-  {
-    type: "switch",
-    name: "openInNewTab",
-    label: "Open in new tab",
-    defaultValue: false,
-    condition: (data: LinkData) => !!data.to,
   },
   {
     type: "select",

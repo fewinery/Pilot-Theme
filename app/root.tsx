@@ -3,13 +3,9 @@ import "@fontsource-variable/cabin";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import type { SeoConfig } from "@shopify/hydrogen";
 import { Analytics, getSeoMeta, useNonce } from "@shopify/hydrogen";
-import type {
-  LinksFunction,
-  LoaderFunctionArgs,
-  MetaArgs,
-} from "@shopify/remix-oxygen";
 import { useThemeSettings, withWeaverse } from "@weaverse/hydrogen";
 import type { CSSProperties } from "react";
+import type { LinksFunction, LoaderFunctionArgs, MetaArgs } from "react-router";
 import {
   isRouteErrorResponse,
   Links,
@@ -17,23 +13,24 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
   useRouteError,
   useRouteLoaderData,
 } from "react-router";
+import { loadCriticalData, loadDeferredData } from "./.server/root";
 import { Footer } from "./components/layout/footer";
 import { Header } from "./components/layout/header";
 import { ScrollingAnnouncement } from "./components/layout/scrolling-announcement";
-import {
-  NewsletterPopup,
-  useShouldRenderNewsletterPopup,
-} from "./components/newsletter-popup";
 import { CustomAnalytics } from "./components/root/custom-analytics";
 import { GenericError } from "./components/root/generic-error";
 import { GlobalLoading } from "./components/root/global-loading";
+import {
+  NewsletterPopup,
+  useShouldRenderNewsletterPopup,
+} from "./components/root/newsletter-popup";
 import { NotFound } from "./components/root/not-found";
 import styles from "./styles/app.css?url";
 import { DEFAULT_LOCALE } from "./utils/const";
-import { loadCriticalData, loadDeferredData } from "./utils/root.server";
 import { GlobalStyle } from "./weaverse/style";
 import { useEffect } from "react";
 
@@ -109,12 +106,18 @@ export function ErrorBoundary({ error }: { error: Error }) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
   const nonce = useNonce();
   const data = useRouteLoaderData<RootLoader>("root");
   const locale = data?.selectedLocale ?? DEFAULT_LOCALE;
   const { topbarHeight, topbarText } = useThemeSettings();
   const shouldShowNewsletterPopup = useShouldRenderNewsletterPopup();
-
+  if (
+    location.pathname === "/subrequest-profiler" ||
+    location.pathname === "/graphiql"
+  ) {
+    return children;
+  }
   return (
     <html lang={locale.language}>
       <head>

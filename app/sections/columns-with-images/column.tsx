@@ -7,10 +7,9 @@ import {
 import type { VariantProps } from "class-variance-authority";
 import { cva } from "class-variance-authority";
 import type { CSSProperties } from "react";
-import { forwardRef } from "react";
 import { Image } from "~/components/image";
 import Link, { type LinkProps, linkContentInputs } from "~/components/link";
-import type { ImageAspectRatio } from "~/types/image";
+import type { ImageAspectRatio } from "~/types/others";
 import { calculateAspectRatio } from "~/utils/image";
 
 const variants = cva("", {
@@ -28,19 +27,17 @@ const variants = cva("", {
 
 interface ColumnWithImageItemProps
   extends VariantProps<typeof variants>,
-    Pick<LinkProps, "variant" | "text" | "to" | "openInNewTab">,
+    Pick<LinkProps, "variant" | "text" | "to">,
     HydrogenComponentProps {
   imageSrc: WeaverseImage;
   imageAspectRatio: ImageAspectRatio;
   imageBorderRadius: number;
   heading: string;
   content: string;
+  ref?: React.Ref<HTMLDivElement>;
 }
 
-const ColumnWithImageItem = forwardRef<
-  HTMLDivElement,
-  ColumnWithImageItemProps
->((props, ref) => {
+function ColumnWithImageItem(props: ColumnWithImageItemProps) {
   const {
     imageSrc,
     imageAspectRatio,
@@ -50,9 +47,9 @@ const ColumnWithImageItem = forwardRef<
     text,
     to,
     variant,
-    openInNewTab,
     hideOnMobile,
     size,
+    ref,
     ...rest
   } = props;
 
@@ -74,14 +71,14 @@ const ColumnWithImageItem = forwardRef<
         {heading && <h6>{heading}</h6>}
         {content && <p dangerouslySetInnerHTML={{ __html: content }} />}
         {text && (
-          <Link variant={variant} to={to} openInNewTab={openInNewTab}>
+          <Link variant={variant} to={to}>
             {text}
           </Link>
         )}
       </div>
     </div>
   );
-});
+}
 
 export default ColumnWithImageItem;
 

@@ -11,13 +11,13 @@ import {
 } from "react-router";
 import useWindowScroll from "react-use/esm/useWindowScroll";
 import Link from "~/components/link";
-import { Logo } from "~/components/logo";
 import type { RootLoader } from "~/root";
 import { cn } from "~/utils/cn";
 import { DEFAULT_LOCALE } from "~/utils/const";
 import { CartDrawer } from "./cart-drawer";
-import { DesktopMenu } from "./desktop-menu";
-import { MobileMenu } from "./mobile-menu";
+import { Logo } from "./logo";
+import { DesktopMenu } from "./menu/desktop-menu";
+import { MobileMenu } from "./menu/mobile-menu";
 import { PredictiveSearchButton } from "./predictive-search";
 
 const variants = cva("", {

@@ -1,4 +1,8 @@
 import { useThemeSettings } from "@weaverse/hydrogen";
+import { extend } from "colord";
+import namesPlugin from "colord/plugins/names";
+
+extend([namesPlugin]);
 
 export function GlobalStyle() {
   const settings = useThemeSettings();
@@ -28,7 +32,7 @@ export function GlobalStyle() {
       bestSellerBadge,
       bundleBadgeColor,
       soldOutBadgeColor,
-      starRating,
+      productReviewsColor,
       bodyBaseSize,
       bodyBaseSpacing,
       bodyBaseLineHeight,
@@ -82,7 +86,7 @@ export function GlobalStyle() {
               --color-best-seller: ${bestSellerBadge};
               --color-bundle-badge: ${bundleBadgeColor};
               --color-sold-out-and-unavailable: ${soldOutBadgeColor};
-              --color-star-rating: ${starRating};
+              --color-product-reviews: ${productReviewsColor};
 
               /* Typography */
               --body-base-size: ${bodyBaseSize}px;

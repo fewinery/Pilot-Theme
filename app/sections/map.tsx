@@ -1,7 +1,6 @@
 import { createSchema } from "@weaverse/hydrogen";
 import { cva, type VariantProps } from "class-variance-authority";
 import clsx from "clsx";
-import { forwardRef } from "react";
 import Heading from "~/components/heading";
 import Link, {
   type LinkProps,
@@ -31,19 +30,21 @@ interface MapSectionProps
   extends Omit<SectionProps, "backgroundColor">,
     VariantProps<typeof variants>,
     LinkStyles {
+  ref: React.Ref<HTMLElement>;
   address: string;
   heading: string;
   description: string;
   alignment: "left" | "center" | "right";
-  buttonVariant: LinkProps["variant"];
+  variant: LinkProps["variant"];
   buttonText: LinkProps["children"];
   boxBgColor: string;
   boxTextColor: string;
   boxBorderRadius: number;
 }
 
-const MapSection = forwardRef<HTMLElement, MapSectionProps>((props, ref) => {
+export default function MapSection(props: MapSectionProps) {
   const {
+    ref,
     height,
     alignment,
     heading,
@@ -53,7 +54,7 @@ const MapSection = forwardRef<HTMLElement, MapSectionProps>((props, ref) => {
     boxTextColor,
     boxBorderRadius,
     buttonText,
-    buttonVariant,
+    variant,
     backgroundColor,
     textColor,
     borderColor,
@@ -62,6 +63,15 @@ const MapSection = forwardRef<HTMLElement, MapSectionProps>((props, ref) => {
     borderColorHover,
     ...rest
   } = props;
+
+  const customButtonStyles = {
+    backgroundColor,
+    textColor,
+    borderColor,
+    backgroundColorHover,
+    textColorHover,
+    borderColorHover,
+  };
 
   return (
     <Section
@@ -91,14 +101,9 @@ const MapSection = forwardRef<HTMLElement, MapSectionProps>((props, ref) => {
         {buttonText && (
           <Link
             to={`https://www.google.com/maps/search/${address}`}
-            openInNewTab
-            variant={buttonVariant}
-            backgroundColor={backgroundColor}
-            textColor={textColor}
-            borderColor={borderColor}
-            backgroundColorHover={backgroundColorHover}
-            textColorHover={textColorHover}
-            borderColorHover={borderColorHover}
+            variant={variant}
+            {...(variant === "custom" ? customButtonStyles : {})}
+            target="_blank"
           >
             {buttonText}
           </Link>
@@ -106,9 +111,7 @@ const MapSection = forwardRef<HTMLElement, MapSectionProps>((props, ref) => {
       </div>
     </Section>
   );
-});
-
-export default MapSection;
+}
 
 export const schema = createSchema({
   type: "map",
@@ -218,7 +221,7 @@ export const schema = createSchema({
               { label: "Custom styles", value: "custom" },
             ],
           },
-          defaultValue: "primary",
+          defaultValue: "outline",
         },
         ...linkStylesInputs,
       ],
