@@ -5,6 +5,7 @@ import type { SeoConfig } from "@shopify/hydrogen";
 import { Analytics, getSeoMeta, useNonce } from "@shopify/hydrogen";
 import { useThemeSettings, withWeaverse } from "@weaverse/hydrogen";
 import type { CSSProperties } from "react";
+import { useEffect } from "react";
 import type { LinksFunction, LoaderFunctionArgs, MetaArgs } from "react-router";
 import {
   isRouteErrorResponse,
@@ -32,18 +33,6 @@ import { NotFound } from "./components/root/not-found";
 import styles from "./styles/app.css?url";
 import { DEFAULT_LOCALE } from "./utils/const";
 import { GlobalStyle } from "./weaverse/style";
-import { useEffect } from "react";
-
-export default function App() {
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://config.gorgias.chat/bundle-loader/01J1WS5NTEF1HASX03YV9R22NA"; // 
-    script.async = true;
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
 
 export type RootLoader = typeof loader;
 
@@ -79,6 +68,17 @@ export const meta = ({ data }: MetaArgs<typeof loader>) => {
 };
 
 function App() {
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src =
+      "https://config.gorgias.chat/bundle-loader/01J1WS5NTEF1HASX03YV9R22NA";
+    script.async = true;
+    document.body.appendChild(script);
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
+
   return <Outlet />;
 }
 
