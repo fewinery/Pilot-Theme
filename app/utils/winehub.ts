@@ -134,6 +134,7 @@ export async function fetchWineClubs({
           ...clubObj,
           id: String(clubObj.id), // Convert numeric ID to string
           shopifyId: String(clubObj.shopifyId || clubObj.shopify_id || ""),
+          type: clubObj.type || null, // Can be null in API
           position:
             typeof clubObj.position === "number" ? clubObj.position : 999,
           description: clubObj.description || null,
@@ -294,6 +295,7 @@ export async function fetchWineClubDetails({
       ...clubObj,
       id: String(clubObj.id), // Convert numeric ID to string
       shopifyId: String(clubObj.shopifyId || clubObj.shopify_id || ""),
+      type: clubObj.type || null, // Can be null in API
       position: typeof clubObj.position === "number" ? clubObj.position : 999,
       description: clubObj.description || null,
       image: clubObj.image || null,

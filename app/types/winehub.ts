@@ -37,8 +37,8 @@ export interface WineClub {
   shopifyId: string;
   shopify_id?: string; // API field name
 
-  /** Selection type for wine products */
-  type: "Manual" | "Automatic";
+  /** Selection type for wine products (can be null in API response) */
+  type: "Manual" | "Automatic" | null;
 
   /** Packaging type */
   caseType: "Bottle" | "Case" | "Mixed";
@@ -439,13 +439,14 @@ export function isWineClub(value: unknown): value is WineClub {
 
   // Check basic required fields that exist in API response
   // Note: API returns id as number, but we convert to string
+  // Note: type can be null in API response
   return (
     (typeof obj.id === "string" || typeof obj.id === "number") &&
     typeof obj.name === "string" &&
     (typeof obj.shopifyId === "string" ||
       typeof obj.shopify_id === "string" ||
       typeof obj.shopify_id === "number") &&
-    (obj.type === "Manual" || obj.type === "Automatic") &&
+    (obj.type === "Manual" || obj.type === "Automatic" || obj.type === null) &&
     (obj.caseType === "Bottle" ||
       obj.caseType === "Case" ||
       obj.caseType === "Mixed") &&
