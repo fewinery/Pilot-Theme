@@ -1,3 +1,4 @@
+import React from "react";
 import type { CaseSize } from "~/types/winehub";
 import { cn } from "~/utils/cn";
 import type { WizardStepProps } from "./selection-wizard";

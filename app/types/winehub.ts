@@ -21,7 +21,7 @@
  * Used in: Wine club listing page, component loaders
  */
 export interface WineClub {
-  /** Unique wine club identifier */
+  /** Unique wine club identifier (API returns number, converted to string) */
   id: string;
 
   /** Display name of the wine club */
@@ -438,10 +438,13 @@ export function isWineClub(value: unknown): value is WineClub {
   const obj = value as Record<string, unknown>;
 
   // Check basic required fields that exist in API response
+  // Note: API returns id as number, but we convert to string
   return (
-    typeof obj.id === "string" &&
+    (typeof obj.id === "string" || typeof obj.id === "number") &&
     typeof obj.name === "string" &&
-    (typeof obj.shopifyId === "string" || typeof obj.shopify_id === "string") &&
+    (typeof obj.shopifyId === "string" ||
+      typeof obj.shopify_id === "string" ||
+      typeof obj.shopify_id === "number") &&
     (obj.type === "Manual" || obj.type === "Automatic") &&
     (obj.caseType === "Bottle" ||
       obj.caseType === "Case" ||

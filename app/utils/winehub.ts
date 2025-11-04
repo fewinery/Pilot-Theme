@@ -132,7 +132,8 @@ export async function fetchWineClubs({
         // Normalize field names and provide safe defaults
         const normalized = {
           ...clubObj,
-          shopifyId: clubObj.shopifyId || clubObj.shopify_id || "",
+          id: String(clubObj.id), // Convert numeric ID to string
+          shopifyId: String(clubObj.shopifyId || clubObj.shopify_id || ""),
           position:
             typeof clubObj.position === "number" ? clubObj.position : 999,
           description: clubObj.description || null,
@@ -291,7 +292,8 @@ export async function fetchWineClubDetails({
     // Normalize and validate (FR-030: handle missing/null fields safely)
     const normalized = {
       ...clubObj,
-      shopifyId: clubObj.shopifyId || clubObj.shopify_id || "",
+      id: String(clubObj.id), // Convert numeric ID to string
+      shopifyId: String(clubObj.shopifyId || clubObj.shopify_id || ""),
       position: typeof clubObj.position === "number" ? clubObj.position : 999,
       description: clubObj.description || null,
       image: clubObj.image || null,
