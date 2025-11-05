@@ -175,18 +175,22 @@ export function useWineClubWizard(wineClub: WineClubDetails) {
         selectedSellingPlan: null,
         selectedProducts: [],
         selectedAddOns: [],
+        // Clear errors when selecting
+        errors: {},
       });
-      clearErrors();
     },
-    [updateState, clearErrors],
+    [updateState],
   );
 
   const selectSellingPlan = useCallback(
     (sellingPlan: SellingPlan) => {
-      updateState({ selectedSellingPlan: sellingPlan });
-      clearErrors();
+      updateState({
+        selectedSellingPlan: sellingPlan,
+        // Clear errors when selecting
+        errors: {},
+      });
     },
-    [updateState, clearErrors],
+    [updateState],
   );
 
   const updateProductQuantity = useCallback(
