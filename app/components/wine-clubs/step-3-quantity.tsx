@@ -80,7 +80,20 @@ export default function Step3Quantity({
   const caseSizeCapacity = selectedCaseSize?.quantity || 12;
 
   // Get available products for this wine club
-  const availableProducts = wineClub.productData || [];
+  // Transform sellingPlanVariants to productData format
+  const availableProducts = (wineClub.sellingPlanVariants || []).map((spv) => ({
+    productVariant: {
+      ...spv.productVariant,
+      // Convert string prices to numbers
+      retailPrice: Number.parseFloat(spv.productVariant.retailPrice),
+    },
+    caseRestrictions: spv.caseRestrictions || [],
+    customOrderingIndex: spv.customOrderingIndex || null,
+    hidden: spv.hidden,
+    addOnOnly: spv.addOnOnly,
+    individualPrices: spv.individualPrices || [],
+    quantity: 0,
+  }));
 
   if (!selectedCaseSize) {
     return (
@@ -244,7 +257,7 @@ export default function Step3Quantity({
                 className="flex justify-between text-sm"
               >
                 <span className="text-green-700">
-                  {product.productVariant.title}
+                  {product.productVariant.productTitle}
                 </span>
                 <span className="text-green-600 font-medium">
                   Qty: {product.quantity}
@@ -316,11 +329,11 @@ function ProductQuantityCard({
       )}
     >
       {/* Product Image */}
-      {productVariant.image ? (
+      {productVariant.productImage ? (
         <div className="aspect-square mb-3 rounded-lg overflow-hidden bg-gray-100">
           <img
-            src={productVariant.image}
-            alt={productVariant.title}
+            src={productVariant.productImage}
+            alt={productVariant.productTitle}
             className="w-full h-full object-cover"
             loading="lazy"
           />
@@ -348,7 +361,7 @@ function ProductQuantityCard({
       {/* Product Details */}
       <div className="space-y-2 mb-4">
         <h3 className="font-semibold text-gray-900 line-clamp-2">
-          {productVariant.title}
+          {productVariant.productTitle}
         </h3>
 
         {productVariant.description && (

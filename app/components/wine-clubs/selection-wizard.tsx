@@ -21,7 +21,7 @@ import type {
 // ============================================================================
 
 export interface WineClubFormState {
-  /** Current step in the wizard (1-5) */
+  /** Current step in the wizard (1-4) */
   currentStep: number;
 
   /** Selected case size */
@@ -127,11 +127,11 @@ export function useWineClubWizard(wineClub: WineClubDetails) {
   // Step navigation
   const goToStep = useCallback(
     (step: number) => {
-      if (step >= 1 && step <= 5) {
+      if (step >= 1 && step <= 4) {
         clearErrors();
         updateState({
           currentStep: step,
-          isReviewing: step === 5,
+          isReviewing: step === 4,
         });
       }
     },
@@ -140,11 +140,11 @@ export function useWineClubWizard(wineClub: WineClubDetails) {
 
   const goToNextStep = useCallback(() => {
     setState((prev) => {
-      if (prev.currentStep < 5) {
+      if (prev.currentStep < 4) {
         return {
           ...prev,
           currentStep: prev.currentStep + 1,
-          isReviewing: prev.currentStep + 1 === 5,
+          isReviewing: prev.currentStep + 1 === 4,
           errors: {},
         };
       }
@@ -323,11 +323,7 @@ export function useWineClubWizard(wineClub: WineClubDetails) {
         return true;
       }
 
-      case 4:
-        // Add-ons are optional, no validation required
-        return true;
-
-      case 5: {
+      case 4: {
         // Review step - ensure all previous steps are valid and check minimum order value again (T070)
         const reviewPricing = calculateTotalPrice(state);
         const reviewMov = wineClub.minimumOrderValue?.find(
@@ -379,8 +375,6 @@ export function useWineClubWizard(wineClub: WineClubDetails) {
       case 3:
         return state.selectedProducts.length > 0;
       case 4:
-        return true; // Add-ons are optional
-      case 5:
         return (
           state.selectedCaseSize !== null &&
           state.selectedSellingPlan !== null &&

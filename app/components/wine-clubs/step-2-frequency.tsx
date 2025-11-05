@@ -38,10 +38,8 @@ export default function Step2Frequency({
     updateState({ selectedSellingPlan: sellingPlan });
     onFrequencySelect?.(sellingPlan);
 
-    // Auto-advance to next step after selection
-    setTimeout(() => {
-      goToNextStep();
-    }, 300);
+    // Note: Removed auto-advance due to state update race condition
+    // Users will click "Next Step" button when ready
   };
 
   // Filter selling plans by case size if available

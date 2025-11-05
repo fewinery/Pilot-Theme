@@ -38,10 +38,8 @@ export default function Step1CaseSize({
     updateState({ selectedCaseSize: caseSize });
     onCaseSizeSelect?.(caseSize);
 
-    // Auto-advance to next step after selection
-    setTimeout(() => {
-      goToNextStep();
-    }, 300);
+    // Note: Removed auto-advance due to state update race condition
+    // Users will click "Next Step" button when ready
   };
 
   if (!caseSizes || caseSizes.length === 0) {

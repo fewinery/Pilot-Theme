@@ -3,7 +3,7 @@ import { cn } from "~/utils/cn";
 /**
  * Progress Bar Component
  *
- * @description Shows user's progress through the 5-step wine club selection wizard
+ * @description Shows user's progress through the 4-step wine club selection wizard
  * Provides visual feedback and step navigation (FR-016)
  *
  * User Story 2 (P2): Wine Club Selection Process
@@ -11,10 +11,10 @@ import { cn } from "~/utils/cn";
  */
 
 export interface ProgressBarProps {
-  /** Current step (1-5) */
+  /** Current step (1-4) */
   currentStep: number;
 
-  /** Total number of steps (default: 5) */
+  /** Total number of steps (default: 4) */
   totalSteps?: number;
 
   /** Whether steps are clickable for navigation */
@@ -32,11 +32,11 @@ export interface ProgressBarProps {
 
 export default function ProgressBar({
   currentStep,
-  totalSteps = 5,
+  totalSteps = 4,
   allowNavigation = true,
   onStepClick,
   className,
-  stepLabels = ["Case Size", "Frequency", "Quantity", "Add-ons", "Review"],
+  stepLabels = ["Case Size", "Frequency", "Quantity", "Review"],
 }: ProgressBarProps) {
   return (
     <div className={cn("w-full", className)}>
@@ -167,11 +167,18 @@ export default function ProgressBar({
  * Get abbreviated label for mobile display
  */
 function getMobileLabel(label: string): string {
-  if (label.toLowerCase().includes("case")) return "Size";
-  if (label.toLowerCase().includes("frequency")) return "When";
-  if (label.toLowerCase().includes("quantity")) return "How many";
-  if (label.toLowerCase().includes("add")) return "Extras";
-  if (label.toLowerCase().includes("review")) return "Check";
+  if (label.toLowerCase().includes("case")) {
+    return "Size";
+  }
+  if (label.toLowerCase().includes("frequency")) {
+    return "When";
+  }
+  if (label.toLowerCase().includes("quantity")) {
+    return "How many";
+  }
+  if (label.toLowerCase().includes("review")) {
+    return "Check";
+  }
   return label.slice(0, 4);
 }
 
@@ -226,14 +233,14 @@ export function MinimalProgressBar(
           <div
             className="h-full bg-blue-600 transition-all duration-300 ease-in-out"
             style={{
-              width: `${((props.currentStep - 1) / ((props.totalSteps || 5) - 1)) * 100}%`,
+              width: `${((props.currentStep - 1) / ((props.totalSteps || 4) - 1)) * 100}%`,
             }}
           />
         </div>
       </div>
       <div className="mt-2 text-center">
         <p className="text-xs text-gray-600">
-          {props.currentStep} of {props.totalSteps || 5} steps completed
+          {props.currentStep} of {props.totalSteps || 4} steps completed
         </p>
       </div>
     </div>

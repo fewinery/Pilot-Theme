@@ -40,8 +40,7 @@ export default function NavigationGuard({
     return !!(
       state.selectedCaseSize ||
       state.selectedSellingPlan ||
-      state.selectedProducts.length > 0 ||
-      state.selectedAddOns.length > 0
+      state.selectedProducts.length > 0
     );
   }, [state]);
 
@@ -107,8 +106,7 @@ export function useNavigationGuard(
     return !!(
       state.selectedCaseSize ||
       state.selectedSellingPlan ||
-      state.selectedProducts.length > 0 ||
-      state.selectedAddOns.length > 0
+      state.selectedProducts.length > 0
     );
   }, [state]);
 

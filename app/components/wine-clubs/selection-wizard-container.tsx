@@ -10,7 +10,6 @@ import { useWineClubWizard } from "./selection-wizard";
 import Step1CaseSize from "./step-1-case-size";
 import Step2Frequency from "./step-2-frequency";
 import Step3Quantity from "./step-3-quantity";
-import Step4AddOns from "./step-4-addons";
 import Step5Review from "./step-5-review";
 
 /**
@@ -66,8 +65,8 @@ export default function SelectionWizardContainer({
 
   // Clear saved state when wizard is completed
   React.useEffect(() => {
-    if (wizard.state.currentStep === 6) {
-      // Completed state
+    if (wizard.state.currentStep === 5) {
+      // Completed state (after step 4 review)
       clearWizardState();
     }
   }, [wizard.state.currentStep]);
@@ -138,8 +137,6 @@ export default function SelectionWizardContainer({
       case 3:
         return <Step3Quantity {...stepProps} />;
       case 4:
-        return <Step4AddOns {...stepProps} />;
-      case 5:
         return (
           <Step5Review
             {...stepProps}
@@ -147,7 +144,6 @@ export default function SelectionWizardContainer({
             onEditCaseSize={() => goToStep(1)}
             onEditFrequency={() => goToStep(2)}
             onEditWines={() => goToStep(3)}
-            onEditAddOns={() => goToStep(4)}
           />
         );
       default:
@@ -176,7 +172,7 @@ export default function SelectionWizardContainer({
         <div className="mb-8">
           <ProgressBar
             currentStep={state.currentStep}
-            totalSteps={5}
+            totalSteps={4}
             allowNavigation={allowStepNavigation}
             onStepClick={handleStepClick}
           />
@@ -186,7 +182,7 @@ export default function SelectionWizardContainer({
         <div className="min-h-[400px]">{renderCurrentStep()}</div>
 
         {/* Navigation Buttons (for steps without auto-advance) */}
-        {state.currentStep !== 5 && state.currentStep !== 1 && (
+        {state.currentStep !== 4 && state.currentStep !== 1 && (
           <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
             <button
               type="button"
@@ -196,7 +192,7 @@ export default function SelectionWizardContainer({
               ← Previous Step
             </button>
 
-            {state.currentStep < 5 && (
+            {state.currentStep < 4 && (
               <button
                 type="button"
                 onClick={() => {
@@ -212,7 +208,7 @@ export default function SelectionWizardContainer({
                     : "bg-gray-300 text-gray-500 cursor-not-allowed",
                 )}
               >
-                {state.currentStep === 4 ? "Review Selection" : "Next Step →"}
+                {state.currentStep === 3 ? "Review Selection" : "Next Step →"}
               </button>
             )}
           </div>

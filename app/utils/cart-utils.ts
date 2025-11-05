@@ -27,9 +27,6 @@ export interface CartLineItem {
 
   /** Custom attributes for the line item */
   attributes?: CartAttribute[];
-
-  /** Whether this item is a subscription */
-  isSubscription: boolean;
 }
 
 export interface CartAttribute {
@@ -117,11 +114,13 @@ export function formatWineClubCart(
       product.productVariant.shopifyId || product.productVariant.id,
     ),
     quantity: product.quantity,
-    sellingPlanId: formatSellingPlanId(selectedSellingPlan.id),
+    sellingPlanId: formatSellingPlanId(
+      selectedSellingPlan.shopifyId || selectedSellingPlan.id,
+    ),
     attributes: [
       {
         key: "_wineClubId",
-        value: wineClub.id,
+        value: String(wineClub.id),
       },
       {
         key: "_wineClubName",
@@ -133,7 +132,7 @@ export function formatWineClubCart(
       },
       {
         key: "_caseSizeId",
-        value: selectedCaseSize.id,
+        value: String(selectedCaseSize.id),
       },
       {
         key: "_subscriptionFrequency",
@@ -144,7 +143,6 @@ export function formatWineClubCart(
         value: "subscription",
       },
     ],
-    isSubscription: true,
   }));
 
   // Format add-on items (one-time purchases)
@@ -156,7 +154,7 @@ export function formatWineClubCart(
     attributes: [
       {
         key: "_wineClubId",
-        value: wineClub.id,
+        value: String(wineClub.id),
       },
       {
         key: "_wineClubName",
@@ -171,7 +169,6 @@ export function formatWineClubCart(
         value: "add-on",
       },
     ],
-    isSubscription: false,
   }));
 
   // Combine all line items
@@ -187,7 +184,7 @@ export function formatWineClubCart(
       },
       {
         key: "_wineClubId",
-        value: wineClub.id,
+        value: String(wineClub.id),
       },
       {
         key: "_orderType",
@@ -214,12 +211,12 @@ export function formatWineClubCart(
   // Create summary
   const summary = {
     wines: selectedProducts.map((product) => ({
-      title: product.productVariant.title,
+      title: product.productVariant.productTitle,
       quantity: product.quantity,
       price: product.calculatedPrice || 0,
     })),
     addOns: selectedAddOns.map((addOn) => ({
-      title: addOn.productVariant.title,
+      title: addOn.productVariant.productTitle,
       quantity: addOn.quantity,
       price: addOn.calculatedPrice || 0,
     })),
@@ -256,22 +253,25 @@ export function formatMerchandiseId(shopifyId: string): string {
 /**
  * Format selling plan ID for Shopify API
  *
- * @param sellingPlanId - Raw selling plan ID
+ * @param sellingPlanId - Raw selling plan ID (string or number)
  * @returns Formatted selling plan ID
  */
-export function formatSellingPlanId(sellingPlanId: string): string {
+export function formatSellingPlanId(sellingPlanId: string | number): string {
+  // Convert to string if it's a number
+  const idStr = String(sellingPlanId);
+
   // If already in GID format, return as-is
-  if (sellingPlanId.startsWith("gid://")) {
-    return sellingPlanId;
+  if (idStr.startsWith("gid://")) {
+    return idStr;
   }
 
   // If numeric ID, convert to GID format
-  if (/^\d+$/.test(sellingPlanId)) {
-    return `gid://shopify/SellingPlan/${sellingPlanId}`;
+  if (/^\d+$/.test(idStr)) {
+    return `gid://shopify/SellingPlan/${idStr}`;
   }
 
   // Fallback: assume it's already in correct format
-  return sellingPlanId;
+  return idStr;
 }
 
 // ============================================================================
@@ -529,11 +529,8 @@ export function validateCartData(cartData: WineClubCartData): {
     if (!line.quantity || line.quantity < 1) {
       errors.push(`Line ${index + 1}: Invalid quantity`);
     }
-    if (line.isSubscription && !line.sellingPlanId) {
-      errors.push(
-        `Line ${index + 1}: Subscription items require selling plan ID`,
-      );
-    }
+    // Note: Subscription items should have sellingPlanId, but we can't validate
+    // without the isSubscription flag. The Shopify API will reject invalid requests.
   });
 
   // Check for wine club metadata

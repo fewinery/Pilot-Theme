@@ -1,10 +1,8 @@
-import type React from "react";
-import { useState } from "react";
-import {
-  formatWineClubCart,
-  generateCartCreateMutation,
-  validateCartData,
-} from "~/utils/cart-utils";
+import { CartForm } from "@shopify/hydrogen";
+import React, { useState } from "react";
+import type { FetcherWithComponents } from "react-router";
+import { toggleCartDrawer } from "~/components/layout/cart-drawer";
+import { formatWineClubCart, validateCartData } from "~/utils/cart-utils";
 import { cn } from "~/utils/cn";
 import PromotionalOfferModal, {
   mockPromotionalOffer,
@@ -33,7 +31,6 @@ export interface Step5ReviewProps extends WizardStepProps {
   onEditCaseSize?: () => void;
   onEditFrequency?: () => void;
   onEditWines?: () => void;
-  onEditAddOns?: () => void;
 }
 
 export default function Step5Review({
@@ -45,20 +42,51 @@ export default function Step5Review({
   onEditCaseSize,
   onEditFrequency,
   onEditWines,
-  onEditAddOns,
 }: Step5ReviewProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPromoModal, setShowPromoModal] = useState(false);
 
-  const {
+  const { selectedCaseSize, selectedSellingPlan, selectedProducts, errors } =
+    state;
+
+  const pricing = calculateTotalPrice(state);
+
+  // Format cart lines for Shopify CartForm
+  const cartLines = React.useMemo(() => {
+    try {
+      if (
+        !(selectedCaseSize && selectedSellingPlan) ||
+        selectedProducts.length === 0
+      ) {
+        return [];
+      }
+
+      const cartData = formatWineClubCart(wineClub, state);
+      const validation = validateCartData(cartData);
+
+      if (!validation.isValid) {
+        console.error("Cart validation failed:", validation.errors);
+        return [];
+      }
+
+      // Debug: Log cart lines to see what's being sent
+      console.log(
+        "[Wine Club] Cart lines:",
+        JSON.stringify(cartData.cartInput.lines, null, 2),
+      );
+
+      return cartData.cartInput.lines;
+    } catch (error) {
+      console.error("Error formatting cart:", error);
+      return [];
+    }
+  }, [
+    wineClub,
+    state,
     selectedCaseSize,
     selectedSellingPlan,
     selectedProducts,
-    selectedAddOns,
-    errors,
-  } = state;
-
-  const pricing = calculateTotalPrice(state);
+  ]);
 
   // Handle checkout process
   const handleCheckout = async () => {
@@ -291,7 +319,7 @@ export default function Step5Review({
                   >
                     <div className="flex-1">
                       <div className="font-medium text-gray-900 text-sm">
-                        {product.productVariant.title}
+                        {product.productVariant.productTitle}
                       </div>
                       <div className="text-xs text-gray-500">
                         ${product.productVariant.retailPrice.toFixed(2)} each
@@ -315,48 +343,6 @@ export default function Step5Review({
               </div>
             ) : (
               <p className="text-sm text-gray-500">No wines selected</p>
-            )}
-          </SelectionSummaryCard>
-
-          {/* Add-on Selection */}
-          <SelectionSummaryCard
-            title="Add-ons"
-            icon={<AddOnIcon />}
-            selection={selectedAddOns.length > 0 ? selectedAddOns : null}
-            onEdit={() => {
-              onEditAddOns?.();
-              updateState({ currentStep: 4 });
-            }}
-            optional
-          >
-            {selectedAddOns.length > 0 ? (
-              <div className="space-y-3">
-                {selectedAddOns.map((addOn) => (
-                  <div
-                    key={addOn.productVariant.id}
-                    className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0"
-                  >
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-900 text-sm">
-                        {addOn.productVariant.title}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        ${addOn.productVariant.retailPrice.toFixed(2)} each
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-medium text-gray-900">
-                        ×{addOn.quantity}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        ${(addOn.calculatedPrice || 0).toFixed(2)}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500">No add-ons selected</p>
             )}
           </SelectionSummaryCard>
         </div>
@@ -444,52 +430,7 @@ export default function Step5Review({
               </div>
 
               {/* Checkout Button */}
-              <button
-                onClick={handleCheckout}
-                disabled={
-                  isSubmitting ||
-                  !selectedCaseSize ||
-                  !selectedSellingPlan ||
-                  selectedProducts.length === 0
-                }
-                className={cn(
-                  "w-full py-3 px-4 rounded-lg font-medium transition-colors",
-                  "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
-                  isSubmitting ||
-                    !selectedCaseSize ||
-                    !selectedSellingPlan ||
-                    selectedProducts.length === 0
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-blue-600 text-white hover:bg-blue-700",
-                )}
-              >
-                {isSubmitting ? (
-                  <span className="flex items-center justify-center">
-                    <svg
-                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    Processing...
-                  </span>
-                ) : (
-                  "Proceed to Checkout"
-                )}
-              </button>
+              <AddToCartButton cartLines={cartLines} />
 
               {/* Sign-up Offer */}
               {showSignUpOffer && (
@@ -650,5 +591,93 @@ function AddOnIcon() {
         d="M12 6v6m0 0v6m0-6h6m-6 0H6"
       />
     </svg>
+  );
+}
+
+/**
+ * Add to Cart Button with CartForm integration
+ */
+interface AddToCartButtonProps {
+  cartLines: any[];
+}
+
+function AddToCartButton({ cartLines }: AddToCartButtonProps) {
+  return (
+    <CartForm
+      route="/cart"
+      inputs={{ lines: cartLines }}
+      action={CartForm.ACTIONS.LinesAdd}
+    >
+      {(fetcher: FetcherWithComponents<any>) => {
+        const prevStateRef = React.useRef(fetcher.state);
+
+        // Open cart drawer when fetcher completes successfully
+        React.useEffect(() => {
+          if (
+            prevStateRef.current === "submitting" &&
+            fetcher.state === "idle" &&
+            fetcher.data &&
+            !fetcher.data.errors
+          ) {
+            toggleCartDrawer(true);
+          }
+          prevStateRef.current = fetcher.state;
+        }, [fetcher.state, fetcher.data]);
+
+        return (
+          <>
+            <button
+              type="submit"
+              disabled={cartLines.length === 0 || fetcher.state !== "idle"}
+              className={cn(
+                "w-full py-3 px-4 rounded-lg font-medium transition-colors",
+                "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+                cartLines.length === 0 || fetcher.state !== "idle"
+                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  : "bg-blue-600 text-white hover:bg-blue-700",
+              )}
+            >
+              {fetcher.state !== "idle" ? (
+                <span className="flex items-center justify-center">
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Adding to Cart...
+                </span>
+              ) : (
+                "Add to Cart"
+              )}
+            </button>
+            {/* Show error message if cart mutation failed */}
+            {fetcher.data?.errors && fetcher.state === "idle" && (
+              <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-800 text-sm font-medium">
+                  Failed to add to cart
+                </p>
+                <p className="text-red-700 text-xs mt-1">
+                  {fetcher.data.errors[0] || "Please try again"}
+                </p>
+              </div>
+            )}
+          </>
+        );
+      }}
+    </CartForm>
   );
 }

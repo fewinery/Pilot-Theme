@@ -18,7 +18,7 @@ import { fetchWineClubDetails, sanitizeHtml } from "~/utils/winehub";
  * - Renders selection wizard directly (not using Weaverse for this functional page)
  */
 
-export async function loader({ params, context }: LoaderFunctionArgs) {
+export async function loader({ params, context, request }: LoaderFunctionArgs) {
   const { clubId } = params;
   const { storefront } = context;
 
@@ -26,22 +26,37 @@ export async function loader({ params, context }: LoaderFunctionArgs) {
     throw new Response("Wine club ID is required", { status: 400 });
   }
 
+  // Check if this is a revalidation request (from fetcher submission)
+  // If so, return cached data or skip expensive API calls
+  const url = new URL(request.url);
+  const isRevalidation = url.searchParams.has("_data");
+
   // Parallel data loading (Constitutional Principle I)
   const [shopData, wineClubDetails] = await Promise.all([
     storefront.query(SHOP_QUERY),
-    fetchWineClubDetails({ context, clubId }),
+    // Skip expensive Winehub API call during revalidation
+    isRevalidation
+      ? Promise.resolve(null)
+      : fetchWineClubDetails({ context, clubId }),
   ]);
 
-  // Handle wine club not found
-  if (!wineClubDetails) {
+  // Handle wine club not found (only on initial load)
+  if (!wineClubDetails && !isRevalidation) {
     throw new Response("Wine club not found", { status: 404 });
   }
 
-  return data({
-    shopData,
-    wineClub: wineClubDetails,
-    clubId,
-  });
+  return data(
+    {
+      shopData,
+      wineClub: wineClubDetails,
+      clubId,
+    },
+    {
+      headers: {
+        "Cache-Control": "public, max-age=60, stale-while-revalidate=300",
+      },
+    },
+  );
 }
 
 export default function WineClubDetailPage() {

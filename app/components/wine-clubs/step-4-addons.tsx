@@ -150,7 +150,7 @@ export default function Step4AddOns({
                   >
                     <div>
                       <span className="text-green-700 text-sm">
-                        {addOn.productVariant.title}
+                        {addOn.productVariant.productTitle}
                       </span>
                       <span className="text-green-600 text-sm ml-2">
                         ×{addOn.quantity}
@@ -249,11 +249,11 @@ function AddOnCard({
       )}
     >
       {/* Product Image */}
-      {productVariant.image ? (
+      {productVariant.productImage ? (
         <div className="aspect-square mb-3 rounded-lg overflow-hidden bg-gray-100">
           <img
-            src={productVariant.image}
-            alt={productVariant.title}
+            src={productVariant.productImage}
+            alt={productVariant.productTitle}
             className="w-full h-full object-cover"
             loading="lazy"
           />
@@ -281,7 +281,7 @@ function AddOnCard({
       {/* Product Details */}
       <div className="space-y-2 mb-4">
         <h3 className="font-semibold text-gray-900 line-clamp-2">
-          {productVariant.title}
+          {productVariant.productTitle}
         </h3>
 
         {productVariant.description && (
