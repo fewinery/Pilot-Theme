@@ -64,6 +64,9 @@ import * as TestimonialItem from "~/sections/testimonials/item";
 import * as TestimonialItems from "~/sections/testimonials/items";
 import * as VideoEmbed from "~/sections/video-embed";
 import * as VideoEmbedItem from "~/sections/video-embed/video";
+import * as WineClubItem from "~/sections/wine-clubs/wine-club-item";
+import * as WineClubSelectionWizard from "~/sections/wine-clubs/wine-club-selection-wizard";
+import * as WineClubsSection from "~/sections/wine-clubs/wine-clubs-section";
 
 export const components: HydrogenComponent[] = [
   SubHeading,
@@ -136,4 +139,7 @@ export const components: HydrogenComponent[] = [
   SlideShow,
   SlideShowSlide,
   Spacer,
+  WineClubsSection,
+  WineClubItem,
+  WineClubSelectionWizard,
 ];

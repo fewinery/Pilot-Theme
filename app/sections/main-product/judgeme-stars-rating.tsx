@@ -77,7 +77,7 @@ export default function JudgemeStarsRating(props: JudgemeStarsRatingProps) {
         setStatus("ok");
       })
       .catch((err) => {
-        console.error("Error fetching Judge.me stars rating data:", err);
+        // console.error("Error fetching Judge.me stars rating data:", err);
         setStatus("error");
       });
   }, [handle, inView]);

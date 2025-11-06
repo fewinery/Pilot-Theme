@@ -32,7 +32,23 @@ export async function action({ request, context }: ActionFunctionArgs) {
 
   switch (cartFormAction) {
     case CartForm.ACTIONS.LinesAdd:
+      console.log(
+        "[Cart Action] Adding lines:",
+        JSON.stringify(inputs.lines, null, 2),
+      );
       result = await cart.addLines(inputs.lines as CartLineInput[]);
+      console.log(
+        "[Cart Action] Result:",
+        JSON.stringify(
+          {
+            hasCart: Boolean(result.cart),
+            errors: result.errors,
+            userErrors: result.userErrors,
+          },
+          null,
+          2,
+        ),
+      );
       break;
     case CartForm.ACTIONS.LinesUpdate:
       result = await cart.updateLines(inputs.lines as CartLineUpdateInput[]);
@@ -66,7 +82,10 @@ export async function action({ request, context }: ActionFunctionArgs) {
   /**
    * The Cart ID may change after each mutation. We need to update it each time in the session.
    */
-  const headers = cart.setCartId(result.cart.id);
+  let headers = new Headers();
+  if (result.cart?.id) {
+    headers = cart.setCartId(result.cart.id);
+  }
 
   const redirectTo = formData.get("redirectTo") ?? null;
   if (typeof redirectTo === "string" && isLocalPath(redirectTo)) {
@@ -124,7 +143,7 @@ function isLocalPath(url: string) {
     // url which is cross domain. If it fails, it's just
     // a path, which will be the current domain.
     new URL(url);
-  } catch (e) {
+  } catch {
     return true;
   }
 
