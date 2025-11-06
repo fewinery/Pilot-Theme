@@ -181,36 +181,38 @@ export default function SelectionWizardContainer({
         {/* Current Step Content */}
         <div className="min-h-[400px]">{renderCurrentStep()}</div>
 
-        {/* Navigation Buttons (for steps without auto-advance) */}
-        {state.currentStep !== 4 && state.currentStep !== 1 && (
+        {/* Navigation Buttons */}
+        {state.currentStep !== 4 && (
           <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={goToPreviousStep}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
-            >
-              ← Previous Step
-            </button>
-
-            {state.currentStep < 4 && (
+            {state.currentStep > 1 ? (
               <button
                 type="button"
-                onClick={() => {
-                  if (validateCurrentStep()) {
-                    goToNextStep();
-                  }
-                }}
-                disabled={!canProceedToNext}
-                className={cn(
-                  "px-6 py-2 rounded-lg font-medium transition-colors",
-                  canProceedToNext
-                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed",
-                )}
+                onClick={goToPreviousStep}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
               >
-                {state.currentStep === 3 ? "Review Selection" : "Next Step →"}
+                ← Previous Step
               </button>
+            ) : (
+              <div />
             )}
+
+            <button
+              type="button"
+              onClick={() => {
+                if (validateCurrentStep()) {
+                  goToNextStep();
+                }
+              }}
+              disabled={!canProceedToNext}
+              className={cn(
+                "px-6 py-2 rounded-lg font-medium transition-colors",
+                canProceedToNext
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed",
+              )}
+            >
+              {state.currentStep === 3 ? "Review Selection" : "Next Step →"}
+            </button>
           </div>
         )}
 

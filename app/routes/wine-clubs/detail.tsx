@@ -62,6 +62,11 @@ export async function loader({ params, context, request }: LoaderFunctionArgs) {
 export default function WineClubDetailPage() {
   const { wineClub } = useLoaderData<typeof loader>();
 
+  // Handle revalidation case where wineClub is null
+  if (!wineClub) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8 max-w-6xl">

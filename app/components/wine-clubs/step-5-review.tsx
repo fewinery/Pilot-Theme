@@ -613,14 +613,24 @@ function AddToCartButton({ cartLines }: AddToCartButtonProps) {
 
         // Open cart drawer when fetcher completes successfully
         React.useEffect(() => {
-          if (
-            prevStateRef.current === "submitting" &&
-            fetcher.state === "idle" &&
-            fetcher.data &&
-            !fetcher.data.errors
-          ) {
+          const hasErrors = (fetcher.data?.errors && fetcher.data.errors.length > 0) ||
+                           (fetcher.data?.userErrors && fetcher.data.userErrors.length > 0);
+          const isCompleting = (prevStateRef.current === "submitting" || prevStateRef.current === "loading") && fetcher.state === "idle";
+
+          // Log for debugging
+          console.log("[AddToCart] State transition:", {
+            prevState: prevStateRef.current,
+            currentState: fetcher.state,
+            hasData: Boolean(fetcher.data),
+            hasErrors,
+            isCompleting,
+          });
+
+          if (isCompleting && !hasErrors) {
+            console.log("[AddToCart] Opening cart drawer");
             toggleCartDrawer(true);
           }
+
           prevStateRef.current = fetcher.state;
         }, [fetcher.state, fetcher.data]);
 
