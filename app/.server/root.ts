@@ -64,18 +64,27 @@ export function loadDeferredData({ context }: LoaderFunctionArgs) {
 }
 
 async function getLayoutData({ storefront, env }: AppLoadContext) {
-  // Detect storefront country (US, CA, EU, etc.)
+  // Detect storefront variant (US, CA, EU, etc.)
   const storefrontCode = storefront.i18n.country.toUpperCase();
 
-  // Only dynamic header menu
+  //
+  // Header menu (already working for you)
+  //
   const headerMenuHandle =
     env[`HEADER_MENU_HANDLE_${storefrontCode}`] ||
     env.HEADER_MENU_HANDLE;
 
+  //
+  // Footer menu (new)
+  //
+  const footerMenuHandle =
+    env[`FOOTER_MENU_HANDLE_${storefrontCode}`] ||
+    env.FOOTER_MENU_HANDLE;
+
   const data = await storefront.query<LayoutQuery>(LAYOUT_QUERY, {
     variables: {
       headerMenuHandle,
-      footerMenuHandle: "footer",  // unchanged
+      footerMenuHandle,
       language: storefront.i18n.language,
     },
   }).catch(console.error);
@@ -93,7 +102,6 @@ async function getLayoutData({ storefront, env }: AppLoadContext) {
       )
     : undefined;
 
-  // Footer untouched
   const footerMenu = data?.footerMenu
     ? parseMenu(
         data.footerMenu,
