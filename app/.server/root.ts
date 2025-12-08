@@ -64,26 +64,24 @@ export function loadDeferredData({ context }: LoaderFunctionArgs) {
 }
 
 async function getLayoutData({ storefront, env }: AppLoadContext) {
-  const data = await storefront
-    .query<LayoutQuery>(LAYOUT_QUERY, {
-      variables: {
-        headerMenuHandle: "yellowstone-1883-reserve-weaverse",
-        footerMenuHandle: "footer",
-        language: storefront.i18n.language,
-      },
-    })
-    .catch(console.error);
+  // Detect storefront country (US, CA, EU, etc.)
+  const storefrontCode = storefront.i18n.country.toUpperCase();
+
+  // Only dynamic header menu
+  const headerMenuHandle =
+    env[`HEADER_MENU_HANDLE_${storefrontCode}`] ||
+    env.HEADER_MENU_HANDLE;
+
+  const data = await storefront.query<LayoutQuery>(LAYOUT_QUERY, {
+    variables: {
+      headerMenuHandle,
+      footerMenuHandle: "footer",  // unchanged
+      language: storefront.i18n.language,
+    },
+  }).catch(console.error);
 
   invariant(data, "No data returned from Shopify API");
 
-  /*
-      Modify specific links/routes (optional)
-      @see: https://shopify.dev/api/storefront/unstable/enums/MenuItemType
-      e.g here we map:
-        - /blogs/news -> /news
-        - /blog/news/blog-post -> /news/blog-post
-        - /collections/all -> /products
-    */
   const customPrefixes = { CATALOG: "products" };
 
   const headerMenu = data?.headerMenu
@@ -95,6 +93,7 @@ async function getLayoutData({ storefront, env }: AppLoadContext) {
       )
     : undefined;
 
+  // Footer untouched
   const footerMenu = data?.footerMenu
     ? parseMenu(
         data.footerMenu,
