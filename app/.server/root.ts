@@ -71,15 +71,13 @@ async function getLayoutData({ storefront, env }: AppLoadContext) {
   // Header menu (already working for you)
   //
   const headerMenuHandle =
-    env[`HEADER_MENU_HANDLE_${storefrontCode}`] ||
-    env.HEADER_MENU_HANDLE;
-
+    env[`HEADER_MENU_HANDLE_${storefrontCode}`] || env.HEADER_MENU_HANDLE;
+  
   //
   // Footer menu (new)
   //
   const footerMenuHandle =
-    env[`FOOTER_MENU_HANDLE_${storefrontCode}`] ||
-    env.FOOTER_MENU_HANDLE;
+    env[`FOOTER_MENU_HANDLE_${storefrontCode}`] || env.FOOTER_MENU_HANDLE;
 
   const data = await storefront.query<LayoutQuery>(LAYOUT_QUERY, {
     variables: {
