@@ -1,6 +1,5 @@
 // Supports weights 400-700
-//import "@fontsource-variable/cabin";
-import "@fontsource/kumbh-sans": "5.0.0";
+import "@fontsource-variable/cabin";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import type { SeoConfig } from "@shopify/hydrogen";
 import { Analytics, getSeoMeta, useNonce } from "@shopify/hydrogen";
