@@ -34,6 +34,7 @@ export default function WaveSpacer(props: WaveSpacerData) {
 export const schema = createSchema({
   type: "wavespacer",
   title: "Wave Spacer",
+  load: () => import("./wave-spacer"),
   settings: [
     {
       group: "Wave Spacer",
