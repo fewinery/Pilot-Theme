@@ -44,7 +44,6 @@
     "format:check": "biome format"
   },
   "dependencies": {
-    "@fontsource/kumbh-sans": "5.0.0",
     "@fontsource-variable/cabin": "^5.2.8",
     "@graphql-codegen/cli": "6.0.1",
     "@phosphor-icons/react": "2.1.10",
