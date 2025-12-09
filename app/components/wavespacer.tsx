@@ -32,7 +32,7 @@ export default function WaveSpacer(props: WaveSpacerData) {
 }
 
 export const schema = createSchema({
-  type: "wave-spacer",
+  type: "wavespacer",
   title: "Wave Spacer",
   settings: [
     {
