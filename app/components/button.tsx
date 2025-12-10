@@ -16,6 +16,7 @@ export const variants = cva(
       variant: {
         primary: [
           "border px-4 py-3",
+          "rounded-full",
           "text-(--btn-primary-text)",
           "bg-(--btn-primary-bg)",
           "border-(--btn-primary-bg)",
