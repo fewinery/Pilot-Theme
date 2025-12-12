@@ -8,12 +8,12 @@ interface SpacerData extends HydrogenComponentProps {
   addSeparator: boolean;
   separatorColor: string;
 
-  // NEW
+  // New wave options
   addWave: boolean;
   waveColor: string;
 }
 
-export default function Spacer(props: SpacerData) {
+export default function WeaverseSpacer(props: SpacerData) {
   const {
     ref,
     mobileHeight,
@@ -22,7 +22,7 @@ export default function Spacer(props: SpacerData) {
     addSeparator,
     separatorColor,
 
-    // NEW
+    // new props
     addWave,
     waveColor,
 
@@ -43,12 +43,12 @@ export default function Spacer(props: SpacerData) {
         } as React.CSSProperties
       }
     >
-      {/* original horizontal line separator */}
+      {/* original border separator */}
       {addSeparator && (
         <div className="mx-auto h-px w-3/4 border-(--separator-color,var(--color-border)) border-t md:w-2/3" />
       )}
 
-      {/* --- NEW: Wavy SVG divider --- */}
+      {/* wavy SVG divider */}
       {addWave && (
         <svg
           className="block w-full h-auto"
@@ -71,8 +71,9 @@ export default function Spacer(props: SpacerData) {
 }
 
 export const schema = createSchema({
-  type: "spacer",
-  title: "Spacer",
+  type: "weaverse-spacer", // NEW UNIQUE TYPE
+  title: "Weaverse Spacer", // VISIBLE NAME IN STUDIO
+
   settings: [
     {
       group: "Spacer",
@@ -88,6 +89,7 @@ export const schema = createSchema({
             unit: "px",
           },
           defaultValue: 50,
+          helpText: "Set to 0 to hide the spacer on mobile",
         },
         {
           type: "range",
@@ -121,12 +123,12 @@ export const schema = createSchema({
           condition: (data: SpacerData) => data.addSeparator,
         },
 
-        // --- NEW SETTINGS ---
+        // NEW wave controls
         {
           type: "switch",
           label: "Add wavy divider",
           name: "addWave",
-          defaultValue: false,
+          defaultValue: true,
         },
         {
           type: "color",
