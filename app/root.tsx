@@ -127,6 +127,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
         <GlobalStyle />
+        <script
+          async
+          src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=YjgCNj"
+        />
       </head>
       <body
         style={
