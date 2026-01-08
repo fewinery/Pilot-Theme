@@ -176,6 +176,4 @@ export function Layout({ children }: { children: React.ReactNode }) {
   
 }
 
-export { default as KlaviyoForm } from "./klaviyo-form";
-
 export default withWeaverse(App);
