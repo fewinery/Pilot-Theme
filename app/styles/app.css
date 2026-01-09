@@ -2,9 +2,13 @@
 @import "tailwindcss" source("../../app");
 @plugin "@tailwindcss/typography";
 
+/* ===============================
+   Custom Fonts
+================================ */
+
 @font-face {
   font-family: "Canela";
-  src: url("/fonts/Canela-Regular.woff2") format("woff2");
+  src: url("/fonts/Canela-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -12,7 +16,7 @@
 
 @font-face {
   font-family: "WhiteOleander";
-  src: url("/fonts/WhiteOleander-Regular.woff2") format("woff2");
+  src: url("/fonts/WhiteOleander.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
