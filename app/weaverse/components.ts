@@ -140,6 +140,7 @@ export const components: HydrogenComponent[] = [
   SlideShow,
   SlideShowSlide,
   Spacer,
+  SplitHeading,
   WineClubsSection,
   WineClubItem,
   WineClubSelectionWizard,
