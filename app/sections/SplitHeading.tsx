@@ -1,19 +1,6 @@
 import { defineSection } from '@weaverse/hydrogen';
-import type { SectionProps } from '@weaverse/hydrogen';
 
-type SplitHeadingProps = SectionProps<{
-  primaryText: string;
-  secondaryText: string;
-  fontSize: number;
-  align: 'left' | 'center' | 'right';
-}>;
-
-function SplitHeading({
-  primaryText,
-  secondaryText,
-  fontSize,
-  align
-}: SplitHeadingProps) {
+function SplitHeading({ primaryText, secondaryText, fontSize, align }) {
   return (
     <div
       style={{
@@ -31,21 +18,15 @@ function SplitHeading({
       }}
     >
       <span
-        style={{
-          fontFamily: 'Canela, serif',
-          fontSize: `${fontSize}px`,
-          lineHeight: 1.1
-        }}
+        className="font-canela"
+        style={{ fontSize: `${fontSize}px`, lineHeight: 1.1 }}
       >
         {primaryText}
       </span>
 
       <span
-        style={{
-          fontFamily: 'WhiteOleander, cursive',
-          fontSize: `${fontSize}px`,
-          lineHeight: 1.1
-        }}
+        className="font-whiteoleander"
+        style={{ fontSize: `${fontSize}px`, lineHeight: 1.1 }}
       >
         {secondaryText}
       </span>
@@ -55,7 +36,6 @@ function SplitHeading({
 
 export default defineSection(SplitHeading, {
   name: 'Split Heading',
-  description: 'Heading with two fonts on one line',
   category: 'Text',
   settings: [
     {
