@@ -22,6 +22,18 @@
   font-display: swap;
 }
 
+/* ===============================
+   Font Utilities
+================================ */
+
+.font-canela {
+  font-family: "Canela", serif;
+}
+
+.font-whiteoleander {
+  font-family: "WhiteOleander", cursive;
+}
+
 @theme {
   --font-cabin: Cabin Variable, ui-sans-serif, system-ui, sans-serif;
   --font-serif: Arial, IBMPlexSerif, Palatino, ui-serif;
