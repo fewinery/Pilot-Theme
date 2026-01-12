@@ -1,9 +1,11 @@
 import { forwardRef } from "react";
-import { type WeaverseSectionProps } from "@weaverse/hydrogen";
+import type { WeaverseSectionProps } from "@weaverse/hydrogen";
 
-const KlaviyoForm = forwardRef<HTMLDivElement, WeaverseSectionProps>(
+export const Component = forwardRef<HTMLDivElement, WeaverseSectionProps>(
   (props, ref) => {
     const { formId } = props.settings;
+
+    if (!formId) return null;
 
     return (
       <div ref={ref} className="klaviyo-form-wrapper">
@@ -13,7 +15,7 @@ const KlaviyoForm = forwardRef<HTMLDivElement, WeaverseSectionProps>(
   }
 );
 
-export default KlaviyoForm;
+Component.displayName = "KlaviyoForm";
 
 export const schema = {
   type: "klaviyo-form",
@@ -27,7 +29,6 @@ export const schema = {
           name: "formId",
           label: "Klaviyo Form ID",
           placeholder: "AbCdEf",
-          helpText: "Paste the Klaviyo embed form ID (from class klaviyo-form-XXXX)",
         },
       ],
     },
