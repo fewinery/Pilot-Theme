@@ -127,10 +127,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
         <GlobalStyle />
-        <Script
-          src="https://static.klaviyo.com/onsite/js/klaviyo.js?company_id=YjgCNj"
-          strategy="afterInteractive"
-        />
       </head>
       <body
         style={
