@@ -31,7 +31,7 @@ import * as ImageWithTextImage from "~/sections/image-with-text/image";
 import * as JudgemeReview from "~/sections/judgeme-reviews";
 import * as JudgemeReviewList from "~/sections/judgeme-reviews/review-list";
 import * as JudgemeReviewSummary from "~/sections/judgeme-reviews/review-summary";
-import KlaviyoForm from "./sections/klaviyo-form";
+import * as KlaviyoForm from "~/sections/klaviyo-form";
 import * as MainProduct from "~/sections/main-product";
 import * as JudgemeStarsRating from "~/sections/main-product/judgeme-stars-rating";
 import * as ProductATCButtons from "~/sections/main-product/product-atc-buttons";
