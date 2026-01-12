@@ -14,3 +14,22 @@ const KlaviyoForm = forwardRef<HTMLDivElement, WeaverseSectionProps>(
 );
 
 export default KlaviyoForm;
+
+export const schema = {
+  type: "klaviyo-form",
+  title: "Klaviyo Form",
+  inspector: [
+    {
+      group: "Klaviyo",
+      inputs: [
+        {
+          type: "text",
+          name: "formId",
+          label: "Klaviyo Form ID",
+          placeholder: "AbCdEf",
+          helpText: "Paste the Klaviyo embed form ID (from class klaviyo-form-XXXX)",
+        },
+      ],
+    },
+  ],
+};
